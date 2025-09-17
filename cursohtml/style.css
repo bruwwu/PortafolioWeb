@@ -1,0 +1,541 @@
+/* 
+ol{
+    color:chocolate;
+}
+ul{
+    color:chocolate;
+}
+
+*{
+    color:red;
+}
+
+h2{
+    color:aquamarine;
+}
+
+.listas{
+    color:brown;
+}
+
+
+
+ul,ol,h1
+    {
+        font-family: "Candal", sans-serif;
+        color:blue;
+    }
+h2{
+    
+}
+.emoji{
+    font-family: "Noto Color Emoji", "Candal", sans-serif;
+    color:rgb(179, 71, 38);
+    font-weight: 400;
+    font-size: 50px;
+    font-style: normal;
+}
+p{
+    font-family: "Candal", sans-serif;
+    font-size: 15px;
+}
+.h3Sub{
+    font-family: "Candal", "Noto Color Emoji", sans-serif;
+}
+
+
+img {
+    width: 200px;
+}
+ 
+
+.bordesin
+{
+    width: 200px;
+    border-width: 8px;
+    border-color: rgb(71, 249, 255);
+    border-style: groove ridge groove;
+    border-radius: 70px;
+}
+
+#titulo{
+    font-size: 40px;
+    color: crimson;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+c
+div{
+    background-color: black;
+}
+*/
+/*
+body{
+    background-color: black;
+    color: chocolate;
+}
+*/
+/*
+#contenedor-principal {
+    color: white;
+    padding: 5px;
+    font-size: 25px;
+    background-color: yellow;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+.rectangulo
+{
+    padding: 5px;
+    margin: 5px;
+}
+
+.px
+{
+    background-color: crimson;
+    width: 200px;
+}
+
+.vw
+{
+    background-color: darkmagenta;
+    width: 20vw;
+}
+.em
+{
+    background-color: green;
+    width: 15em;
+    font-size: 1rem;
+}
+/* Ejemplo prioridad 1*/
+/*
+.texto-morado
+{
+    color: blueviolet;
+}
+
+.texto-azul
+{
+    color: blue;
+}
+
+/* Ejemplo prioridad 2*/
+/*
+a{
+    text-decoration: rgb(72, 116, 59) wavy underline;
+}
+
+.sin-sub
+{
+    text-decoration: none;
+}
+
+
+/* Ejemplo prioridad 3*/
+/*
+#titulo 
+{
+    color: violet;
+}
+.texto-verde
+{
+    color: greenyellow;
+}
+
+/* Ejemplo prioridad 4*/
+/*
+.titulo2
+{
+    color: brown;
+}
+
+#titulo3
+{
+    color: aquamarine !important;
+}
+
+
+.pixel-pinguino {
+    position: relative;
+    width: 64px;
+    height: 64px;
+    background-color: #00AEEF; 
+}
+
+.cuerpo {
+    position: absolute;
+    top: 8px;
+    left: 16px;
+    width: 32px;
+    height: 48px;
+    background-color: #1C4F91; 
+}
+
+.barriga {
+    position: absolute;
+    top: 16px;
+    left: 8px;
+    width: 16px;
+    height: 24px;
+    background-color: #FFFFFF; 
+
+.pico {
+    position: absolute;
+    top: 16px;
+    left: 24px;
+    width: 8px;
+    height: 8px;
+    background-color: #FFD700; 
+
+.ojo {
+    position: absolute;
+    top: 8px;
+    left: 20px;
+    width: 8px;
+    height: 8px;
+    background-color: #FFFFFF; 
+}
+
+.pie {
+    position: absolute;
+    top: 48px;
+    width: 16px;
+    height: 8px;
+    background-color: #FFD700; 
+}
+
+.pie-izquierdo {
+    left: 0;
+}
+
+.pie-derecho {
+    left: 16px;
+}
+*/
+/*
+.pinguino {
+    --pinguino-barriga: rgb(244, 240, 240); 
+    --pinguino-pico: rgb(240, 233, 26);
+    --pinguino-piel: rgba(12, 13, 12, 0.895);
+  
+    position: relative;
+    margin: auto;
+    display: block;
+    margin-top: 5%;
+    width: 300px;
+    height: 300px;
+  }
+  
+  .pinguino-superior {
+  top: 10%;
+  left: 25%;
+  background: var(--pinguino-piel, black);
+  width: 50%;
+  height: 45%;
+  border-radius: 70% 70% 60% 60%;
+  }
+  
+  .pinguino-inferior {
+  top: 40%;
+  left: 23.5%;
+  background: var(--pinguino-piel, black);
+  width: 53%;
+  height: 45%;
+  border-radius: 70% 70% 100% 100%;
+  }
+  
+  .mano-derecha {
+  top: 0%;
+  left: -5%;
+  background: var(--pinguino-piel, red);
+  width: 30%;
+  height: 60%;
+  border-radius: 30% 30% 120% 30%;
+  transform: rotate(45deg);
+  z-index: -1;
+  }
+  
+  .mano-izquierda {
+  top: 0%;
+  left: 75%;
+  background: var(--pinguino-piel, black);
+  width: 30%;
+  height: 60%;
+  border-radius: 30% 30% 30% 120%;
+  transform: rotate(-45deg);
+  z-index: -1;
+  }
+  
+  .mejilla-derecha {
+  top: 15%;
+  left: 35%;
+  background: var(--pinguino-barriga, white);
+  width: 60%;
+  height: 70%;
+  border-radius: 70% 70% 60% 60%;
+  }
+  
+  .mejilla-izquierda {
+  top: 15%;
+  left: 5%;
+  background: var(--pinguino-barriga, white);
+  width: 60%;
+  height: 70%;
+  border-radius: 70% 70% 60% 60%;
+  }
+  
+  .barriga {
+  top: 60%;
+  left: 2.5%;
+  background: var(--pinguino-barriga, white);
+  width: 95%;
+  height: 100%;
+  border-radius: 120% 120% 100% 100%;
+  }
+  
+  .pie-derecho {
+  top: 85%;
+  left: 60%;
+  background: var(--pinguino-pico, orange);
+  width: 15%;
+  height: 30%;
+  border-radius: 50% 50% 50% 50%;
+  transform: rotate(-80deg);
+  z-index: -2222;
+  }
+  
+  .pie-izquierdo {
+  top: 85%;
+  left: 25%;
+  background: var(--pinguino-pico, orange);
+  width: 15%;
+  height: 30%;
+  border-radius: 50% 50% 50% 50%;
+  transform: rotate(80deg);
+  z-index: -2222;
+  }
+  
+  .ojo-derecho {
+  top: 45%;
+  left: 60%;
+  background: black;
+  width: 15%;
+  height: 17%;
+  border-radius: 50%;
+  }
+  
+  .ojo-izquierdo {
+  top: 45%;
+  left: 25%;
+  background: black;
+  width: 15%;
+  height: 17%;
+  border-radius: 50%;
+  }
+  
+  .reflejo-ojos {
+  top: 25%;
+  left: 15%;
+  background: white;
+  width: 35%;
+  height: 35%;
+  border-radius: 50%;
+  }
+  
+  .color-mejilla-derecha {
+  top: 65%;
+  left: 15%;
+  background: pink;
+  width: 15%;
+  height: 10%;
+  border-radius: 50%;
+  }
+  
+  .color-mejilla-izquierda {
+  top: 65%;
+  left: 70%;
+  background: pink;
+  width: 15%;
+  height: 10%;
+  border-radius: 50%;
+  }
+  
+  .pico-superior {
+  top: 60%;
+  left: 40%;
+  background: orange;
+  background: var(--pinguino-pico, orange);
+  width: 20%;
+  height: 10%;
+  border-radius: 50%;
+  }
+  
+  .pico-inferior {
+  top: 65%;
+  left: 42%;
+  background: var(--pinguino-pico, orange);
+  width: 16%;
+  height: 10%;
+  border-radius: 50%;
+  }
+  
+  body {
+  background:#c6faf1;
+  }
+  
+  .pinguino * {
+  position: absolute;
+  }
+
+  /*Sección de sombrero añadido en clase :D*/
+  /*
+  .sombrero-low
+  {
+    position: relative;
+    top: -10%;
+    left: -13%;
+    background:black;
+    width: 130%;
+    height: 50%;
+    border-radius: 20% 20% 20% 20%;
+}
+
+.sombrero-top
+{
+    position: relative;
+    top: -100%;
+    left: 10%;
+    background:  rgb(0, 0, 0);
+    width: 85%;
+    height: 50%;
+    border-radius: 10% 10% 10% 10%;
+    
+}
+
+.sombrero-mid
+{
+    position: relative;
+    top: -120%;
+    left: 10%;
+    background: rgb(255, 0, 0);
+    width: 85%;
+    height: 20%;
+    border-radius: 10% 10% 10% 10%;
+    border: 2px solid rgba(197, 18, 11, 0.712);
+}
+
+.cigarro
+{
+    position: absolute;
+    top: 80%;
+    left: 10%;
+    background: var(--pinguino-piel, brown);
+    width: 85%;
+    height: 20%;
+    border-radius: 10% 10% 10% 10%;
+}
+*/
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #ffccd5;
+}
+
+.header {
+    width: 100%;
+    height: 200px;
+    overflow: hidden;
+}
+
+.header-img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.profile {
+    text-align: center;
+    padding: 20px;
+}
+
+.profile-img {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    margin-top: -75px;
+    border: 5px solid #ffccd5;
+}
+
+h1 {
+    margin: 10px 0;
+}
+
+p {
+    margin: 5px 0 20px;
+    font-size: 1.2em;
+}
+
+.social-icons {
+    display: flex;
+    justify-content: center;
+}
+
+.social-icons img {
+    width: 30px;
+    height: 30px;
+}
+
+.links {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 20px 0;
+    gap: 10px;
+}
+
+.link {
+    text-decoration: none;
+    color: white;
+    background-color: #1a1a2e;
+    padding: 10px 20px;
+    border-radius: 5px;
+    width: 80%;
+    text-align: center;
+}
+
+.video-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.video {
+    width: 100%;
+}
+
+.video video {
+    width: 100%;
+    border-radius: 10px;
+}
+
+.video-description {
+    padding: 15px;
+    margin-bottom: 20px;
+}
+
+/* Para pantallas pequeñas */
+@media (max-width: 768px) {
+    .video-container {
+        grid-template-columns: 1fr;
+    }
+}
+
+footer
+{
+    display: flex;
+    justify-content: center;
+}
