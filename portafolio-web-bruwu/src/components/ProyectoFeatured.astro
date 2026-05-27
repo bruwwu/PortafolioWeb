@@ -1,0 +1,302 @@
+---
+// ProyectoFeatured.astro
+// Card "destacado" — media grande a la izquierda, info a la derecha.
+
+interface Props {
+  titulo: string;
+  año: string | number;
+  descripcion: string;
+  tags: string[];
+  videoUrl?: string;
+  imagenUrl?: string;
+  link?: string;
+}
+
+const { titulo, año, descripcion, tags, videoUrl, imagenUrl, link } = Astro.props;
+---
+
+<article class="featured">
+  <!-- Badge flotante -->
+  <span class="featured__badge">✦ Destacado</span>
+
+  <div class="featured__inner">
+    <!-- Media (izq 58%) -->
+    <div class="featured__media">
+      {
+        videoUrl ? (
+          <video
+            class="featured__video"
+            src={videoUrl}
+            muted
+            loop
+            playsinline
+            preload="metadata"
+            data-featured-video
+          />
+        ) : imagenUrl && link ? (
+          <a href={link} target="_blank" rel="noopener noreferrer" class="featured__img-link">
+            <img src={imagenUrl} alt={titulo} class="featured__img" />
+            <span class="featured__img-overlay">Ver proyecto →</span>
+          </a>
+        ) : imagenUrl ? (
+          <img src={imagenUrl} alt={titulo} class="featured__img" />
+        ) : (
+          <div class="featured__placeholder" aria-hidden="true">📽️</div>
+        )
+      }
+    </div>
+
+    <!-- Info (der 42%) -->
+    <div class="featured__info">
+      <p class="featured__año">{año}</p>
+      <h3 class="featured__titulo">{titulo}</h3>
+      <p class="featured__desc">{descripcion}</p>
+
+      {tags.length > 0 && (
+        <ul class="featured__tags" aria-label="Tecnologías">
+          {tags.map((tag) => (
+            <li class="featured__tag">{tag}</li>
+          ))}
+        </ul>
+      )}
+
+      {videoUrl && (
+        <button
+          class="featured__cta"
+          data-open-modal
+          data-modal-video={videoUrl}
+          data-modal-titulo={titulo}
+          aria-label={`Ver demo de ${titulo}`}
+        >
+          <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18" aria-hidden="true">
+            <path d="M8 5v14l11-7z"/>
+          </svg>
+          Ver demo completo
+        </button>
+      )}
+      {!videoUrl && link && (
+        <a class="featured__cta" href={link} target="_blank" rel="noopener noreferrer">
+          Abrir proyecto →
+        </a>
+      )}
+    </div>
+  </div>
+</article>
+
+<style>
+  .featured {
+    position: relative;
+    background: var(--color-tarjeta);
+    border-radius: var(--radio-lg);
+    border: 1px solid var(--color-borde);
+    box-shadow: var(--sombra-card);
+    overflow: hidden;
+    transition: box-shadow 0.35s var(--ease-out);
+  }
+
+  .featured:hover {
+    box-shadow: var(--sombra-hover);
+  }
+
+  /* Badge */
+  .featured__badge {
+    position: absolute;
+    top: 1.1rem;
+    left: 1.1rem;
+    z-index: 10;
+    background: var(--color-acento);
+    color: var(--color-texto);
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 4px 12px;
+    border-radius: var(--radio-pill);
+    pointer-events: none;
+  }
+
+  /* Layout interno */
+  .featured__inner {
+    display: grid;
+    grid-template-columns: 58% 42%;
+    min-height: 420px;
+  }
+
+  /* ── Media ─────────────────────────── */
+  .featured__media {
+    position: relative;
+    overflow: hidden;
+    background: #1a1a1a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .featured__video,
+  .featured__img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.5s var(--ease-out);
+  }
+
+  .featured:hover .featured__video,
+  .featured:hover .featured__img {
+    transform: scale(1.03);
+  }
+
+  .featured__img-link {
+    display: block;
+    width: 100%;
+    height: 100%;
+    position: relative;
+  }
+
+  .featured__img-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(74, 53, 37, 0.55);
+    color: #fff;
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    opacity: 0;
+    transition: opacity 0.25s ease;
+  }
+
+  .featured__img-link:hover .featured__img-overlay { opacity: 1; }
+
+  .featured__placeholder {
+    font-size: 4rem;
+    opacity: 0.25;
+  }
+
+  /* ── Info ──────────────────────────── */
+  .featured__info {
+    padding: 2.5rem 2.25rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 1rem;
+  }
+
+  .featured__año {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--color-texto-tenue);
+    margin: 0;
+  }
+
+  .featured__titulo {
+    font-family: 'Poppins', sans-serif;
+    font-size: clamp(1.2rem, 2.2vw, 1.55rem);
+    font-weight: 700;
+    color: var(--color-texto);
+    line-height: 1.25;
+    margin: 0;
+  }
+
+  .featured__desc {
+    font-size: 0.95rem;
+    color: var(--color-texto-suave);
+    line-height: 1.78;
+    margin: 0;
+  }
+
+  /* Tags */
+  .featured__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .featured__tag {
+    padding: 4px 14px;
+    border-radius: var(--radio-pill);
+    background: var(--color-acento-bg);
+    border: 1px solid rgba(255, 213, 79, 0.5);
+    color: var(--color-texto);
+    font-size: 0.73rem;
+    font-weight: 600;
+    font-family: 'Poppins', sans-serif;
+    letter-spacing: 0.3px;
+  }
+
+  /* CTA */
+  .featured__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    align-self: flex-start;
+    margin-top: 0.5rem;
+    padding: 0.6rem 1.4rem;
+    border-radius: var(--radio-pill);
+    background: var(--color-acento);
+    color: var(--color-texto);
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    transition:
+      background 0.2s ease,
+      transform 0.25s var(--ease-out),
+      box-shadow 0.25s ease;
+  }
+
+  .featured__cta:hover {
+    background: #f9a825;
+    transform: translateY(-2px);
+    box-shadow: var(--sombra-btn);
+    color: var(--color-texto);
+  }
+
+  /* ── Responsive ────────────────────── */
+  @media (max-width: 860px) {
+    .featured__inner {
+      grid-template-columns: 1fr;
+      min-height: auto;
+    }
+
+    .featured__media {
+      min-height: 260px;
+    }
+
+    .featured__info {
+      padding: 1.75rem 1.5rem;
+    }
+  }
+</style>
+
+<script>
+  // Pausa/play del video del featured al hover
+  const article = document.querySelector('.featured') as HTMLElement | null;
+  const video = document.querySelector('[data-featured-video]') as HTMLVideoElement | null;
+
+  if (article && video) {
+    // Muestra un frame representativo al cargar
+    video.addEventListener('loadedmetadata', () => {
+      video.currentTime = 2;
+    });
+
+    article.addEventListener('mouseenter', () => {
+      video.play().catch(() => {});
+    });
+    article.addEventListener('mouseleave', () => {
+      video.pause();
+      video.currentTime = 2;
+    });
+  }
+</script>

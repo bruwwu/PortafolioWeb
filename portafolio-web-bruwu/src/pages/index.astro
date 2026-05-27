@@ -1,9 +1,19 @@
 ---
 import "../styles/global.css";
-import ProyectoAcordeon from "../components/ProyectoAcordeon.astro";
+import ProyectoFeatured from "../components/ProyectoFeatured.astro";
+import ProyectoCard from "../components/ProyectoCard.astro";
 import MascotaInteractiva from "../components/MascotaInteractiva.astro";
 
 const proyectos = [
+	{
+		titulo: "Demo en UE5 — Sistema basado en momentum",
+		año: 2025,
+		descripcion:
+			"Juego en desarrollo basado en mecánicas de movimiento con momentum.",
+		tags: ["Unreal Engine 5", "Blueprints", "Third Person", "Movement"],
+		videoUrl: "/images/UnrealShowcase.mp4",
+		destacado: true,
+	},
 	{
 		titulo: "Showcase — Comportamiento de NPC's",
 		año: 2024,
@@ -29,14 +39,6 @@ const proyectos = [
 		videoUrl: "/images/bossfightShowcase.mp4",
 	},
 	{
-		titulo: "Demo en UE5 — Sistema basado en momentum",
-		año: 2025,
-		descripcion:
-			"Juego en desarrollo basado en mecánicas de movimiento con momentum.",
-		tags: ["Unreal Engine 5", "Blueprints", "Third Person", "Movement"],
-		videoUrl: "/images/UnrealShowcase.mp4",
-	},
-	{
 		titulo: "Camina O Muere — Roblox Experience",
 		año: 2025,
 		descripcion:
@@ -54,6 +56,9 @@ const proyectos = [
 		imagenUrl: "/images/minijuegoSN.jpeg",
 	},
 ];
+
+const featured = proyectos.find((p) => p.destacado)!;
+const resto = proyectos.filter((p) => !p.destacado);
 ---
 
 <html lang="es">
@@ -195,25 +200,52 @@ const proyectos = [
 		<!-- ═══════════════════════════
          PROYECTOS
     ═══════════════════════════ -->
-		<main class="proyectos">
-			<h2 class="proyectos__titulo">
-				<span>Proyectos &amp; Showcases</span>
-			</h2>
+		<main class="showcase">
+			<div class="showcase__inner">
+				<!-- Encabezado de sección -->
+				<header class="showcase__header">
+					<h2 class="showcase__titulo">
+						<span>Proyectos <em>&amp;</em> Showcases</span>
+					</h2>
+					<p class="showcase__subtitulo">
+						{proyectos.length} proyectos · Game dev &amp; Software
+					</p>
+				</header>
 
-			<div class="proyectos__lista">
-				{
-					proyectos.map((p) => (
-						<ProyectoAcordeon
-							titulo={p.titulo}
-							año={p.año}
-							descripcion={p.descripcion}
-							tags={p.tags}
-							videoUrl={p.videoUrl}
-							imagenUrl={p.imagenUrl}
-							link={p.link}
-						/>
-					))
-				}
+				<!-- Proyecto destacado -->
+				<section class="showcase__featured" aria-label="Proyecto destacado">
+					<ProyectoFeatured
+						titulo={featured.titulo}
+						año={featured.año}
+						descripcion={featured.descripcion}
+						tags={featured.tags}
+						videoUrl={featured.videoUrl}
+						imagenUrl={featured.imagenUrl}
+						link={featured.link}
+					/>
+				</section>
+
+				<!-- Grid del resto -->
+				<section class="showcase__grid-wrap" aria-label="Más proyectos">
+					<h3 class="showcase__grid-titulo">Más proyectos</h3>
+					<div class="showcase__grid" role="list">
+						{
+							resto.map((p) => (
+								<div role="listitem">
+									<ProyectoCard
+										titulo={p.titulo}
+										año={p.año}
+										descripcion={p.descripcion}
+										tags={p.tags}
+										videoUrl={p.videoUrl}
+										imagenUrl={p.imagenUrl}
+										link={p.link}
+									/>
+								</div>
+							))
+						}
+					</div>
+				</section>
 			</div>
 		</main>
 
@@ -231,6 +263,41 @@ const proyectos = [
          EASTER EGG — Mascota
     ═══════════════════════════ -->
 		<MascotaInteractiva />
+
+		<!-- ═══════════════════════════
+         MODAL LIGHTBOX
+    ═══════════════════════════ -->
+		<div
+			class="modal"
+			id="proyecto-modal"
+			role="dialog"
+			aria-modal="true"
+			aria-labelledby="modal-titulo"
+			hidden
+		>
+			<div class="modal__backdrop" id="modal-backdrop"></div>
+			<div class="modal__box">
+				<button
+					class="modal__close"
+					id="modal-close"
+					aria-label="Cerrar modal"
+				>
+					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="20" height="20">
+						<path d="M18 6L6 18M6 6l12 12" stroke-linecap="round" stroke-linejoin="round"/>
+					</svg>
+				</button>
+
+				<div class="modal__media" id="modal-media"></div>
+
+				<div class="modal__info">
+					<h3 class="modal__titulo" id="modal-titulo"></h3>
+					<p class="modal__desc" id="modal-desc"></p>
+					<a class="modal__link" id="modal-link" href="#" target="_blank" rel="noopener noreferrer" hidden>
+						Abrir proyecto →
+					</a>
+				</div>
+			</div>
+		</div>
 	</body>
 </html>
 
@@ -378,29 +445,40 @@ const proyectos = [
 		box-shadow: 0 4px 14px rgba(249, 168, 37, 0.35);
 	}
 
-	/* ── Proyectos ─────────────────────── */
-	.proyectos {
-		max-width: 900px;
+	/* ── Showcase (contenedor principal) ── */
+	.showcase {
+		background: var(--color-fondo);
+		padding: 0 1.5rem 5rem;
+	}
+
+	.showcase__inner {
+		max-width: 1200px;
 		margin: 0 auto;
-		padding: 0 2rem 4rem;
+		display: flex;
+		flex-direction: column;
+		gap: 3rem;
 	}
 
-	.proyectos__titulo {
+	/* Encabezado */
+	.showcase__header {
 		text-align: center;
-		font-family: "Poppins", "Montserrat", sans-serif;
-		font-weight: 700;
-		font-size: clamp(1.25rem, 3vw, 1.6rem);
-		color: var(--color-texto);
-		padding: 3rem 0 2rem;
-		position: relative;
+		padding-top: 3rem;
 	}
 
-	.proyectos__titulo span {
+	.showcase__titulo {
+		font-family: "Poppins", sans-serif;
+		font-weight: 700;
+		font-size: clamp(1.35rem, 3vw, 1.9rem);
+		color: var(--color-texto);
 		position: relative;
 		display: inline-block;
 	}
 
-	.proyectos__titulo span::after {
+	.showcase__titulo span {
+		position: relative;
+	}
+
+	.showcase__titulo span::after {
 		content: "";
 		position: absolute;
 		left: 0;
@@ -408,11 +486,46 @@ const proyectos = [
 		width: 100%;
 		height: 4px;
 		background: var(--color-acento);
-		border-radius: 9999px;
+		border-radius: var(--radio-pill);
 	}
 
-	.proyectos__lista {
-		margin-top: 0.5rem;
+	.showcase__titulo em {
+		font-style: normal;
+		color: var(--color-acento);
+	}
+
+	.showcase__subtitulo {
+		margin-top: 1rem;
+		font-size: 0.88rem;
+		color: var(--color-texto-tenue);
+		font-family: "Inter", sans-serif;
+		font-weight: 500;
+		letter-spacing: 0.5px;
+	}
+
+	/* Grid de cards */
+	.showcase__grid-titulo {
+		font-family: "Poppins", sans-serif;
+		font-size: 1rem;
+		font-weight: 600;
+		color: var(--color-texto-suave);
+		margin-bottom: 1.25rem;
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+	}
+
+	.showcase__grid-titulo::after {
+		content: "";
+		flex: 1;
+		height: 1px;
+		background: var(--color-borde);
+	}
+
+	.showcase__grid {
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: 1.25rem;
 	}
 
 	/* ── Footer ────────────────────────── */
@@ -434,7 +547,137 @@ const proyectos = [
 		color: #f9a825;
 	}
 
+	/* ── Modal Lightbox ─────────────────── */
+	.modal {
+		position: fixed;
+		inset: 0;
+		z-index: 1000;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding: 1.5rem;
+	}
+
+	.modal[hidden] {
+		display: none;
+	}
+
+	.modal__backdrop {
+		position: absolute;
+		inset: 0;
+		background: rgba(30, 20, 10, 0.82);
+		backdrop-filter: blur(6px);
+		-webkit-backdrop-filter: blur(6px);
+		cursor: pointer;
+	}
+
+	.modal__box {
+		position: relative;
+		z-index: 1;
+		background: var(--color-tarjeta);
+		border-radius: var(--radio-lg);
+		max-width: 860px;
+		width: 100%;
+		overflow: hidden;
+		box-shadow: 0 24px 80px rgba(30, 20, 10, 0.45);
+		animation: modal-in 0.3s var(--ease-out) both;
+	}
+
+	@keyframes modal-in {
+		from {
+			opacity: 0;
+			transform: scale(0.94) translateY(12px);
+		}
+		to {
+			opacity: 1;
+			transform: scale(1) translateY(0);
+		}
+	}
+
+	.modal__close {
+		position: absolute;
+		top: 1rem;
+		right: 1rem;
+		z-index: 10;
+		width: 36px;
+		height: 36px;
+		border-radius: 50%;
+		background: rgba(255, 255, 255, 0.9);
+		border: 1px solid var(--color-borde);
+		cursor: pointer;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		color: var(--color-texto);
+		transition:
+			background 0.2s ease,
+			transform 0.2s ease;
+	}
+
+	.modal__close:hover {
+		background: var(--color-acento);
+		transform: scale(1.08);
+	}
+
+	.modal__media {
+		width: 100%;
+		aspect-ratio: 16 / 9;
+		background: #111;
+		overflow: hidden;
+	}
+
+	.modal__media video,
+	.modal__media img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+
+	.modal__info {
+		padding: 1.5rem 1.75rem 1.75rem;
+		display: flex;
+		flex-direction: column;
+		gap: 0.6rem;
+	}
+
+	.modal__titulo {
+		font-family: "Poppins", sans-serif;
+		font-size: 1.15rem;
+		font-weight: 700;
+		color: var(--color-texto);
+		margin: 0;
+	}
+
+	.modal__desc {
+		font-size: 0.9rem;
+		color: var(--color-texto-suave);
+		line-height: 1.75;
+		margin: 0;
+	}
+
+	.modal__link {
+		display: inline-block;
+		margin-top: 0.25rem;
+		font-family: "Poppins", sans-serif;
+		font-size: 0.85rem;
+		font-weight: 700;
+		color: #f9a825;
+		text-decoration: none;
+	}
+	.modal__link:hover {
+		color: var(--color-texto);
+	}
+	.modal__link[hidden] {
+		display: none;
+	}
+
 	/* ── Responsive ────────────────────── */
+	@media (max-width: 900px) {
+		.showcase__grid {
+			grid-template-columns: repeat(2, 1fr);
+		}
+	}
+
 	@media (max-width: 700px) {
 		.banner {
 			height: 180px;
@@ -446,11 +689,126 @@ const proyectos = [
 			margin-top: -55px;
 		}
 
-		.proyectos {
-			padding: 0 1rem 3rem;
-		}
 		.social {
 			gap: 0.85rem;
 		}
+
+		.showcase {
+			padding: 0 1rem 4rem;
+		}
+
+		.showcase__grid {
+			grid-template-columns: 1fr;
+		}
 	}
 </style>
+
+<script>
+	// ── Modal Lightbox ──────────────────────────────────────────
+	const modal = document.getElementById('proyecto-modal') as HTMLElement;
+	const modalMedia = document.getElementById('modal-media') as HTMLElement;
+	const modalTitulo = document.getElementById('modal-titulo') as HTMLElement;
+	const modalDesc = document.getElementById('modal-desc') as HTMLElement;
+	const modalLink = document.getElementById('modal-link') as HTMLAnchorElement;
+	const modalClose = document.getElementById('modal-close') as HTMLButtonElement;
+	const modalBackdrop = document.getElementById('modal-backdrop') as HTMLElement;
+
+	function openModal(data: {
+		titulo: string;
+		desc: string;
+		video?: string;
+		imagen?: string;
+		link?: string;
+	}) {
+		// Limpiar media anterior
+		modalMedia.innerHTML = '';
+
+		if (data.video) {
+			const v = document.createElement('video');
+			v.src = data.video;
+			v.controls = true;
+			v.autoplay = true;
+			v.muted = false;
+			v.style.width = '100%';
+			v.style.height = '100%';
+			v.style.objectFit = 'cover';
+			modalMedia.appendChild(v);
+		} else if (data.imagen) {
+			const img = document.createElement('img');
+			img.src = data.imagen;
+			img.alt = data.titulo;
+			modalMedia.appendChild(img);
+		}
+
+		modalTitulo.textContent = data.titulo;
+		modalDesc.textContent = data.desc;
+
+		if (data.link) {
+			modalLink.href = data.link;
+			modalLink.removeAttribute('hidden');
+		} else {
+			modalLink.setAttribute('hidden', '');
+		}
+
+		modal.removeAttribute('hidden');
+		document.body.style.overflow = 'hidden';
+		modalClose.focus();
+	}
+
+	function closeModal() {
+		modal.setAttribute('hidden', '');
+		document.body.style.overflow = '';
+		// Detener video si hay
+		const v = modalMedia.querySelector('video');
+		if (v) {
+			v.pause();
+			v.src = '';
+		}
+		modalMedia.innerHTML = '';
+	}
+
+	// Botón CTA del featured (data-open-modal)
+	document.querySelectorAll<HTMLButtonElement>('[data-open-modal]').forEach((btn) => {
+		btn.addEventListener('click', () => {
+			openModal({
+				titulo: btn.dataset.modalTitulo ?? '',
+				desc: '',
+				video: btn.dataset.modalVideo || undefined,
+			});
+		});
+	});
+
+	// Cards del grid (data-open-card-modal)
+	document.querySelectorAll<HTMLElement>('[data-open-card-modal]').forEach((card) => {
+		const open = () => {
+			const link = card.dataset.modalLink;
+			// Si tiene link externo y NO tiene video, abre directamente
+			if (link && !card.dataset.modalVideo) {
+				window.open(link, '_blank', 'noopener,noreferrer');
+				return;
+			}
+			openModal({
+				titulo: card.dataset.modalTitulo ?? '',
+				desc: card.dataset.modalDesc ?? '',
+				video: card.dataset.modalVideo || undefined,
+				imagen: card.dataset.modalImagen || undefined,
+				link: link || undefined,
+			});
+		};
+
+		card.addEventListener('click', open);
+		card.addEventListener('keydown', (e) => {
+			if (e.key === 'Enter' || e.key === ' ') {
+				e.preventDefault();
+				open();
+			}
+		});
+	});
+
+	// Cerrar modal
+	modalClose.addEventListener('click', closeModal);
+	modalBackdrop.addEventListener('click', closeModal);
+	document.addEventListener('keydown', (e) => {
+		if (e.key === 'Escape' && !modal.hasAttribute('hidden')) closeModal();
+	});
+</script>
