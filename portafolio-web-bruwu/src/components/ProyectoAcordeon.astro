@@ -1,0 +1,254 @@
+---
+// ProyectoAcordeon.astro
+// Componente "Zero JS" — usa <details>/<summary> nativos del navegador.
+
+interface Props {
+  titulo:      string;
+  año:         string | number;
+  descripcion: string;
+  tags:        string[];
+  videoUrl?:   string;
+  imagenUrl?:  string;
+}
+
+const { titulo, año, descripcion, tags, videoUrl, imagenUrl } = Astro.props;
+---
+
+<details class="proyecto">
+  <!-- ── Fila visible (estado cerrado) ── -->
+  <summary class="proyecto__fila">
+    <span class="proyecto__titulo">{titulo}</span>
+
+    <span class="proyecto__meta">
+      <span class="proyecto__año">{año}</span>
+      <!-- Flecha SVG animada con CSS -->
+      <svg class="proyecto__flecha" viewBox="0 0 16 16" fill="none"
+           xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="M4 6l4 4 4-4" stroke="currentColor"
+              stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </span>
+  </summary>
+
+  <!-- ── Contenido expandido ── -->
+  <div class="proyecto__cuerpo">
+    <!-- Columna izquierda: media -->
+    <div class="proyecto__media">
+      {videoUrl ? (
+        <video controls muted preload="metadata" class="proyecto__video">
+          <source src={videoUrl} type="video/mp4" />
+          Tu navegador no soporta video.
+        </video>
+      ) : imagenUrl ? (
+        <img src={imagenUrl} alt={`Imagen del proyecto ${titulo}`} class="proyecto__imagen" />
+      ) : (
+        <div class="proyecto__placeholder" aria-hidden="true">
+          <span>📽️</span>
+        </div>
+      )}
+    </div>
+
+    <!-- Columna derecha: info -->
+    <div class="proyecto__info">
+      <p class="proyecto__desc">{descripcion}</p>
+
+      {tags.length > 0 && (
+        <ul class="proyecto__tags" aria-label="Tecnologías">
+          {tags.map((tag) => (
+            <li class="proyecto__tag">{tag}</li>
+          ))}
+        </ul>
+      )}
+    </div>
+  </div>
+</details>
+
+<style>
+  /* ── Ocultar marcador nativo ── */
+  .proyecto summary::-webkit-details-marker { display: none; }
+  .proyecto summary::marker               { display: none; }
+
+  /* ══════════════════════════════
+     FILA (estado cerrado)
+  ══════════════════════════════ */
+  .proyecto {
+    border-bottom: 1px solid rgba(74, 53, 37, 0.12);
+  }
+
+  .proyecto__fila {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.1rem 0.25rem;
+    cursor: pointer;
+    list-style: none;
+    outline: none;
+    transition: background 0.2s ease;
+    border-radius: 6px;
+  }
+
+  .proyecto__fila:hover {
+    background: rgba(255, 213, 79, 0.10);
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+
+  /* Anular el outline feo del navegador */
+  .proyecto__fila:focus-visible {
+    outline: 2px solid #FFD54F;
+    outline-offset: 2px;
+  }
+
+  .proyecto__titulo {
+    font-family: 'Poppins', 'Montserrat', sans-serif;
+    font-weight: 700;
+    font-size: 1.05rem;
+    color: #4A3525;
+    transition: color 0.2s ease;
+  }
+
+  .proyecto__fila:hover .proyecto__titulo {
+    color: #F9A825;
+  }
+
+  .proyecto__meta {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-shrink: 0;
+  }
+
+  .proyecto__año {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #9E8878;
+  }
+
+  /* ── Flecha: gira al abrirse ── */
+  .proyecto__flecha {
+    width: 18px;
+    height: 18px;
+    color: #9E8878;
+    transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), color 0.2s ease;
+    flex-shrink: 0;
+  }
+
+  .proyecto[open] .proyecto__flecha {
+    transform: rotate(180deg);
+    color: #F9A825;
+  }
+
+  /* ══════════════════════════════
+     CUERPO EXPANDIDO
+  ══════════════════════════════ */
+  .proyecto__cuerpo {
+    display: grid;
+    grid-template-columns: 40% 60%;
+    gap: 1.5rem;
+    background: #FFFFFF;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-top: 0.5rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 16px rgba(74, 53, 37, 0.08);
+
+    /* Animación de apertura suave */
+    animation: abrirse 0.28s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  @keyframes abrirse {
+    from {
+      opacity: 0;
+      transform: translateY(-6px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* ── Media (izquierda 40%) ── */
+  .proyecto__media {
+    border-radius: 6px;
+    overflow: hidden;
+    background: #FFF3C4;
+    min-height: 180px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .proyecto__video,
+  .proyecto__imagen {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 6px;
+  }
+
+  .proyecto__placeholder {
+    font-size: 3rem;
+    opacity: 0.4;
+  }
+
+  /* ── Info (derecha 60%) ── */
+  .proyecto__info {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 1rem;
+  }
+
+  .proyecto__desc {
+    font-family: 'Inter', 'Roboto', sans-serif;
+    font-size: 0.95rem;
+    color: #4A3525;
+    line-height: 1.78;
+  }
+
+  /* ── Tags ── */
+  .proyecto__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    list-style: none;
+  }
+
+  .proyecto__tag {
+    display: inline-block;
+    padding: 3px 13px;
+    border-radius: 9999px;
+    background: rgba(255, 213, 79, 0.28);
+    border: 1px solid rgba(255, 213, 79, 0.55);
+    color: #4A3525;
+    font-size: 0.75rem;
+    font-weight: 600;
+    font-family: 'Poppins', sans-serif;
+    letter-spacing: 0.2px;
+    transition: background 0.2s ease, border-color 0.2s ease;
+  }
+
+  .proyecto__tag:hover {
+    background: #FFD54F;
+    border-color: #F9A825;
+  }
+
+  /* ══════════════════════════════
+     RESPONSIVO — mobile
+  ══════════════════════════════ */
+  @media (max-width: 600px) {
+    .proyecto__cuerpo {
+      grid-template-columns: 1fr;
+    }
+
+    .proyecto__media {
+      min-height: 180px;
+    }
+
+    .proyecto__titulo {
+      font-size: 0.95rem;
+    }
+  }
+</style>

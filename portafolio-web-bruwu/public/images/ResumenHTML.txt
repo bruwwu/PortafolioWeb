@@ -1,0 +1,64 @@
+### Descripciones Breves CSS
+
+1. **Nivel Elemento/Etiqueta**:
+   Aplicar estilos directamente a etiquetas HTML.
+
+2. **Nivel Archivo HTML**:
+   Incluir estilos en el archivo HTML utilizando la etiqueta `<style>`.
+
+3. **Nivel style.css**:
+   Definir estilos en un archivo CSS externo y enlazarlo al HTML con `<link>`.
+
+### Descripción HTML y Examen
+
+HTML: `<div>` es una etiqueta contenedor.
+
+**Examen**: Utilizar todas las etiquetas vistas para el examen, el tema es libre. Entregar los archivos `.html` junto con el `style.css`.
+
+### Etiquetas Usadas
+- `<html>`: Define el documento HTML.
+- `<head>`: Contiene metadatos del documento.
+- `<body>`: Contiene el contenido del documento.
+- `<title>`: Define el título del documento.
+- `<div>`: Contenedor genérico para contenido en bloque.
+- `<ol>`: Lista ordenada.
+- `<ul>`: Lista desordenada.
+- `<form>`: Define un formulario.
+- `<input>`: Define un campo de entrada.
+- `<button>`: Define un botón clicable.
+- `<meta>`: Define metadatos del documento.
+- `<p>`: Define un párrafo.
+- `<img>`: Inserta una imagen.
+- `<footer>`: Define el pie de página del documento.
+- `<br>`: Inserta un salto de línea.
+- `<hr>`: Inserta una línea horizontal.
+- `<strong>`: Define texto con fuerte énfasis.
+- `<link>`: Enlaza recursos externos, como hojas de estilo.
+- `<a>`: Define un enlace.
+- `<h1>, <h2>, <h3>, <h4>, <h5>, <h6>`: Define encabezados de diferentes niveles.
+
+### Atributos Usados
+- `radio`: Define un botón de opción.
+- `checkbox`: Define una casilla de verificación.
+- `id`: Identificador único para un elemento.
+- `label`: Etiqueta para un elemento de formulario.
+- `src`: Define la URL de una imagen.
+- `href`: Define la URL de un enlace.
+- `alt`: Texto alternativo para una imagen.
+- `type`: Define el tipo de entrada.
+- `name`: Nombre de un elemento de formulario.
+- `content`: Define el contenido de un elemento meta.
+- `placeholder`: Texto de marcador de posición en un campo de entrada.
+- `required`: Hace que un campo de entrada sea obligatorio.
+- `class`: Define una clase CSS para un elemento.
+
+### Style.css
+- **Selector general**: `*` - Aplica estilos a todos los elementos.
+- **Selector de clase**: `.` - Aplica estilos a los elementos con una clase específica.
+- **Color de fondo**: `background-color` - Define el color de fondo.
+- **Color de fuente**: `color` - Define el color del texto.
+- **Padding**: `padding` - Espacio interior del elemento.
+- **Margin**: `margin` - Espacio exterior del elemento.
+- **Border**: `border` - Define el ancho, estilo, radio y color del borde.
+- **Tamaño (imágenes, texto)**: `width`, `height`, `font-size` - Define el tamaño de imágenes y texto.
+- **Font (Family, size, style)**: `font-family`, `font-size`, `font-style` - Define la familia, tamaño y estilo de la fuente.

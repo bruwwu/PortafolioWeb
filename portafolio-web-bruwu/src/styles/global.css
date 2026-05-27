@@ -1,0 +1,87 @@
+/* ============================================
+   GLOBAL STYLES — POMPOMPURIN THEME
+   ============================================ */
+
+/* ─── Variables ─────────────────────────────── */
+:root {
+  --color-fondo:    #FFF9E6;
+  --color-texto:    #4A3525;
+  --color-acento:   #FFD54F;
+  --color-tarjeta:  #FFFFFF;
+
+  --color-texto-suave:  #7A6555;
+  --color-texto-tenue:  #9E8878;
+  --color-borde:        rgba(74, 53, 37, 0.10);
+  --color-acento-bg:    rgba(255, 213, 79, 0.20);
+
+  --sombra-card:  0 2px 18px rgba(74, 53, 37, 0.09);
+  --sombra-hover: 0 8px 36px rgba(74, 53, 37, 0.16);
+  --sombra-btn:   0 4px 14px rgba(249, 168, 37, 0.35);
+
+  --radio-sm:   6px;
+  --radio-md:   12px;
+  --radio-lg:   20px;
+  --radio-pill: 9999px;
+
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ─── Reset ──────────────────────────────────── */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  font-size: 16px;
+}
+
+/* ─── Scrollbar ──────────────────────────────── */
+::-webkit-scrollbar        { width: 7px; }
+::-webkit-scrollbar-track  { background: #FFF3C4; }
+::-webkit-scrollbar-thumb  { background: #F9A825; border-radius: var(--radio-pill); }
+::-webkit-scrollbar-thumb:hover { background: var(--color-texto); }
+
+/* ─── Base ───────────────────────────────────── */
+body {
+  font-family: 'Inter', 'Roboto', sans-serif;
+  background-color: var(--color-fondo);
+  color: var(--color-texto);
+  line-height: 1.65;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: var(--color-acento);
+  color: var(--color-texto);
+}
+
+img, video { display: block; max-width: 100%; }
+
+a {
+  color: #F9A825;
+  text-decoration: none;
+  transition: color 0.25s ease;
+}
+a:hover { color: var(--color-texto); }
+
+/* ─── Tipografía ─────────────────────────────── */
+h1, h2, h3, h4 {
+  font-family: 'Poppins', 'Montserrat', sans-serif;
+  font-weight: 700;
+  color: var(--color-texto);
+  line-height: 1.2;
+}
+
+h1 { font-size: clamp(2rem, 5vw, 2.75rem); }
+h2 { font-size: clamp(1.35rem, 3vw, 1.75rem); }
+h3 { font-size: 1.2rem; font-weight: 600; }
+
+p {
+  font-size: 0.975rem;
+  color: var(--color-texto-suave);
+  line-height: 1.75;
+}
