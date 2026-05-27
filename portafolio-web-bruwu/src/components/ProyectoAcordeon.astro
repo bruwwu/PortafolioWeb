@@ -51,6 +51,21 @@ const { titulo, año, descripcion, tags, videoUrl, imagenUrl, link } =
             <source src={videoUrl} type="video/mp4" />
             Tu navegador no soporta video.
           </video>
+        ) : imagenUrl && link ? (
+          <a
+            href={link}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="proyecto__imagen-link"
+            aria-label={`Ver proyecto ${titulo}`}
+          >
+            <img
+              src={imagenUrl}
+              alt={`Imagen del proyecto ${titulo}`}
+              class="proyecto__imagen"
+            />
+            <span class="proyecto__imagen-overlay">Ver proyecto →</span>
+          </a>
         ) : imagenUrl ? (
           <img
             src={imagenUrl}
@@ -211,6 +226,43 @@ const { titulo, año, descripcion, tags, videoUrl, imagenUrl, link } =
     height: 100%;
     object-fit: cover;
     border-radius: 6px;
+  }
+
+  /* ── Imagen con link ── */
+  .proyecto__imagen-link {
+    position: relative;
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: 6px;
+    overflow: hidden;
+    cursor: pointer;
+  }
+
+  .proyecto__imagen-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(74, 53, 37, 0.55);
+    color: #fff;
+    font-family: "Poppins", sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    opacity: 0;
+    transition: opacity 0.25s ease;
+    border-radius: 6px;
+  }
+
+  .proyecto__imagen-link:hover .proyecto__imagen-overlay {
+    opacity: 1;
+  }
+
+  .proyecto__imagen-link:hover .proyecto__imagen {
+    transform: scale(1.04);
+    transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
   }
 
   .proyecto__placeholder {

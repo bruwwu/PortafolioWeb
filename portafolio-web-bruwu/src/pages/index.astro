@@ -44,6 +44,14 @@ const proyectos = [
 		imagenUrl: "/images/CaminaOMuere.png",
 		link: "https://www.roblox.com/share?code=b63caaebfceffc4eadc8f2a02309b015&type=ExperienceDetails&stamp=1779918549344",
 	},
+	{
+		titulo: "Mini-Juego TopDown — ServiceNow",
+		año: 2026,
+		descripcion:
+			"Minijuego de vista top-down desarrollado completamente dentro de la plataforma ServiceNow usando HTML, CSS y JavaScript puro. Creado para demostrar habilidades de desarrollo web en un entorno enterprise. (La app principal que desarrollo bajo NDA aún no puede mostrarse)",
+		tags: ["ServiceNow", "HTML", "CSS", "JavaScript"],
+		imagenUrl: "/images/minijuegoSN.jpeg",
+	},
 ];
 ---
 
@@ -196,6 +204,7 @@ const proyectos = [
 							tags={p.tags}
 							videoUrl={p.videoUrl}
 							imagenUrl={p.imagenUrl}
+							link={p.link}
 						/>
 					))
 				}
