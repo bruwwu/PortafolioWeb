@@ -1,0 +1,256 @@
+---
+// MascotaInteractiva.astro
+// Easter egg interactivo: mascota estilo Pompompurin con burbujas de diálogo.
+---
+
+<div
+  id="mascota-contenedor"
+  aria-label="Mascota interactiva"
+  role="button"
+  tabindex="0"
+>
+  <div id="mascota-burbuja" role="status" aria-live="polite">
+    <span id="mascota-texto"></span>
+  </div>
+  <img
+    id="mascota-img"
+    src="/images/yoPompurin.gif"
+    alt="Mascota interactiva — bruwuu"
+    draggable="false"
+  />
+</div>
+
+<style>
+  /* ── Paleta ── */
+  :root {
+    --color-texto: #4a3525;
+    --color-burbuja: #ffffff;
+    --color-borde: #ffd54f;
+  }
+
+  /* ── Contenedor principal ── */
+  #mascota-contenedor {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 50;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* ── Mascota (GIF) ── */
+  #mascota-img {
+    width: 90px;
+    height: 90px;
+    object-fit: contain;
+    border-radius: 50%;
+    border: 2.5px solid var(--color-borde);
+    background: #fff9e6;
+    box-shadow: 0 4px 18px rgba(74, 53, 37, 0.18);
+    transition:
+      transform 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+      box-shadow 0.25s ease;
+    display: block;
+  }
+
+  #mascota-img:hover {
+    box-shadow: 0 6px 24px rgba(249, 168, 37, 0.35);
+  }
+
+  /* Clase de salto — añadida/quitada por JS */
+  #mascota-img.saltar {
+    transform: scale(1.1) translateY(-10px);
+  }
+
+  /* ── Burbuja de diálogo ── */
+  #mascota-burbuja {
+    position: absolute;
+    bottom: 110%;
+    right: 0;
+    width: max-content;
+    max-width: 220px;
+    background: var(--color-burbuja);
+    color: var(--color-texto);
+    border: 2px solid var(--color-borde);
+    border-radius: 12px;
+    padding: 10px 14px;
+    font-family: "Inter", sans-serif;
+    font-size: 0.85rem;
+    line-height: 1.5;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+    /* Estado oculto por defecto */
+    opacity: 0;
+    transform: translateY(10px);
+    pointer-events: none;
+    transition:
+      opacity 0.3s ease,
+      transform 0.3s ease;
+  }
+
+  /* Triangulito apuntando hacia la mascota */
+  #mascota-burbuja::after {
+    content: "";
+    position: absolute;
+    bottom: -10px;
+    right: 22px;
+    border-width: 10px 8px 0 8px;
+    border-style: solid;
+    border-color: var(--color-borde) transparent transparent transparent;
+  }
+
+  /* Capa interior del triángulo (relleno blanco) */
+  #mascota-burbuja::before {
+    content: "";
+    position: absolute;
+    bottom: -7px;
+    right: 24px;
+    border-width: 8px 6px 0 6px;
+    border-style: solid;
+    border-color: var(--color-burbuja) transparent transparent transparent;
+    z-index: 1;
+  }
+
+  /* Estado visible — añadida por JS */
+  #mascota-burbuja.mostrar {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* ── Easter Egg: texto especial ── */
+  #mascota-burbuja.secreto {
+    border-color: #f9a825;
+    background: #fffde7;
+    max-width: 240px;
+  }
+
+  #mascota-burbuja.secreto::after {
+    border-color: #f9a825 transparent transparent transparent;
+  }
+
+  .secreto-texto strong {
+    color: #e65100;
+    display: block;
+    margin-top: 4px;
+    font-size: 0.8rem;
+    letter-spacing: 0.3px;
+  }
+
+  /* ── Responsive: ocultar en pantallas muy pequeñas si estorba ── */
+  @media (max-width: 360px) {
+    #mascota-contenedor {
+      bottom: 12px;
+      right: 12px;
+    }
+    #mascota-img {
+      width: 70px;
+      height: 70px;
+    }
+  }
+</style>
+
+<script>
+  // ──────────────────────────────────────────
+  //  MascotaInteractiva — lógica de easter egg
+  // ──────────────────────────────────────────
+  (function () {
+    const contenedor = document.getElementById("mascota-contenedor");
+    const mascotaImg = document.getElementById("mascota-img");
+    const burbuja = document.getElementById("mascota-burbuja");
+    const textoEl = document.getElementById("mascota-texto");
+
+    if (!contenedor || !mascotaImg || !burbuja || !textoEl) return;
+
+    // ── Estado ──
+    let clickCount = 0;
+    let timeoutBurbuja: ReturnType<typeof setTimeout> | undefined;
+    let fraseAnterior = -1;
+
+    const frases = [
+      "¡A bruwuu le encanta programar en C# y Unity!",
+      "Eyes up guardian",
+      "Bienvenido al portafolio de bruwu.",
+      "Si me ven recomendando UE5, no soy yo...",
+      "¿Escuchaste eso? Seguro fue mi gato pidiendo atención",
+      "No se que otra cosa escribir jaja, holaaaa",
+    ];
+
+    // ── Helpers ──
+    function fraseAleatoria(): string {
+      if (frases.length === 1) return frases[0];
+      let idx: number;
+      do {
+        idx = Math.floor(Math.random() * frases.length);
+      } while (idx === fraseAnterior);
+      fraseAnterior = idx;
+      return frases[idx];
+    }
+
+    function mostrarBurbuja(html: string, esSecreto = false) {
+      textoEl.innerHTML = html;
+      burbuja.classList.toggle("secreto", esSecreto);
+      burbuja.classList.add("mostrar");
+    }
+
+    function ocultarBurbuja() {
+      burbuja.classList.remove("mostrar");
+    }
+
+    function programarOcultar() {
+      clearTimeout(timeoutBurbuja);
+      timeoutBurbuja = setTimeout(ocultarBurbuja, 4000);
+    }
+
+    function hacerSaltar() {
+      mascotaImg.classList.add("saltar");
+      setTimeout(() => mascotaImg.classList.remove("saltar"), 200);
+    }
+
+    // ── Handler principal ──
+    function alHacerClic() {
+      clickCount += 1;
+      hacerSaltar();
+      clearTimeout(timeoutBurbuja);
+
+      if (clickCount < 10) {
+        mostrarBurbuja(fraseAleatoria());
+      } else if (clickCount === 10) {
+        mostrarBurbuja(
+          `🎉 ¡Encontraste el secreto!<br>
+           <span class="secreto-texto">
+             Escribe el código
+             <strong>POMPOM26</strong>
+             en el asunto de tu correo para contacto prioritario.
+           </span>`,
+          true,
+        );
+      } else {
+        // Más de 10: mantiene el mensaje del secreto visible
+        mostrarBurbuja(
+          `¡Ya lo sabes! 😄<br>
+           <span class="secreto-texto">
+             Recuerda: <strong>POMPOM26</strong> en el asunto del correo.
+           </span>`,
+          true,
+        );
+      }
+
+      programarOcultar();
+    }
+
+    // ── Eventos ──
+    contenedor.addEventListener("click", alHacerClic);
+
+    // Accesibilidad: también responde a Enter/Espacio
+    contenedor.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        alHacerClic();
+      }
+    });
+  })();
+</script>

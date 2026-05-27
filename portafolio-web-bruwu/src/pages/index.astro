@@ -1,6 +1,7 @@
 ---
 import "../styles/global.css";
 import ProyectoAcordeon from "../components/ProyectoAcordeon.astro";
+import MascotaInteractiva from "../components/MascotaInteractiva.astro";
 
 const proyectos = [
 	{
@@ -12,7 +13,7 @@ const proyectos = [
 		videoUrl: "/images/NPCvideo.mp4",
 	},
 	{
-		titulo: "✨ Colaboración — Shaders & Partículas",
+		titulo: "Colaboración — Shaders & Partículas",
 		año: 2024,
 		descripcion:
 			"En colaboración con @_fangfriday, desarrollamos un sistema de partículas de nieve, un shader de agua y un efecto de cámara pixel-art en Unity.",
@@ -28,7 +29,7 @@ const proyectos = [
 		videoUrl: "/images/bossfightShowcase.mp4",
 	},
 	{
-		titulo: "Demo en UE5, sistema basado en momentum",
+		titulo: "Demo en UE5 — Sistema basado en momentum",
 		año: 2025,
 		descripcion:
 			"Juego en desarrollo basado en mecánicas de movimiento con momentum.",
@@ -97,13 +98,18 @@ const proyectos = [
     ═══════════════════════════ -->
 		<section class="perfil">
 			<img
-				src="/images/fish.gif"
+				src="/images/bruwuformal.jpeg"
 				alt="Avatar animado — bruwuu"
 				class="perfil__avatar"
 			/>
 
-			<h1 class="perfil__nombre">bruwuu</h1>
+			<h1 class="perfil__nombre">bruwwu</h1>
 			<p class="perfil__subtitulo">Bruno Amezcua Reyna</p>
+			<a
+				href="mailto:brunoamezcua1@gmail.com"
+				class="perfil__email"
+				aria-label="Enviar correo a Bruno">✉️ brunoamezcua1@gmail.com</a
+			>
 
 			<p class="perfil__bio">
 				Desarrollador de software especializado en el ecosistema
@@ -220,6 +226,11 @@ const proyectos = [
 				<span class="footer__marca">bruwuu</span> © 2025
 			</p>
 		</footer>
+
+		<!-- ═══════════════════════════
+         EASTER EGG — Mascota
+    ═══════════════════════════ -->
+		<MascotaInteractiva />
 	</body>
 </html>
 
@@ -296,6 +307,26 @@ const proyectos = [
 		color: var(--color-texto-tenue, #9e8878);
 		font-family: "Inter", sans-serif;
 		margin-top: 0.3rem;
+	}
+
+	.perfil__email {
+		display: inline-block;
+		margin-top: 0.45rem;
+		font-family: "Inter", sans-serif;
+		font-size: 0.875rem;
+		font-weight: 500;
+		color: var(--color-texto-tenue, #9e8878);
+		text-decoration: none;
+		border-bottom: 1.5px dashed rgba(74, 53, 37, 0.25);
+		padding-bottom: 1px;
+		transition:
+			color 0.2s ease,
+			border-color 0.2s ease;
+	}
+
+	.perfil__email:hover {
+		color: #f9a825;
+		border-color: #f9a825;
 	}
 
 	.perfil__bio {
