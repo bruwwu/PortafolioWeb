@@ -1,0 +1,705 @@
+---
+// TopDownRPG.astro
+// Mini-juego top-down RPG estilo Zelda con transiciones de pantalla,
+// sistema de iluminación/antorchas, y entidades (NPC, vaca, luciérnagas).
+---
+
+<div class="rpg-wrapper" id="rpg-wrapper">
+  <div class="rpg-canvas-container">
+    <canvas id="gameCanvas"></canvas>
+  </div>
+
+  <div class="rpg-controls">
+    <p>Mover: <kbd>W</kbd> <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd> | Correr: <kbd>Shift</kbd> | Dash: <kbd>Espacio</kbd></p>
+    <p>Explora el mapa caminando hacia los bordes de la pantalla (Estilo clásico).</p>
+  </div>
+</div>
+ 
+<style>
+  .rpg-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 0;
+  }
+
+  .rpg-canvas-container {
+    position: relative;
+    line-height: 0;
+  }
+
+  #gameCanvas {
+    border: 4px solid #ecf0f1;
+    border-radius: 8px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+    background-color: #000;
+    image-rendering: pixelated;
+    max-width: 100%;
+    height: auto;
+  }
+
+  .rpg-controls {
+    margin-top: 15px;
+    text-align: center;
+    color: #bdc3c7;
+    font-family: sans-serif;
+    font-size: 0.85rem;
+  }
+
+  .rpg-controls p {
+    margin: 0.25rem 0;
+  }
+
+  .rpg-controls kbd {
+    background-color: #34495e;
+    padding: 3px 6px;
+    border-radius: 4px;
+    border: 1px solid #7f8c8d;
+    color: #fff;
+    font-size: 0.8rem;
+  }
+</style>
+
+<script>
+  (function initGame() {
+    // =========================================================================
+    // 1. CONFIGURACIÓN DEL CANVAS Y MOTOR
+    // =========================================================================
+    const canvas = document.getElementById('gameCanvas') as HTMLCanvasElement;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d")!;
+    
+    const tileSize = 32; 
+    let frame = 0;
+
+    // Paleta de colores
+    const colorPasto = "#1b9e52";
+    const colorPisoDungeon = "#3e352d";
+    const colorWall = "#7c8283";       
+    const colorWallDungeon = "#26211c";
+    const colorPlayer = "#dbae34";     
+    const colorAgua = "#2980b9";       
+    const colorAguaHighlight = "rgba(255,255,255,0.6)";
+    const colorArbol = "#14703a";
+    const colorTronco = "#5c4033";
+    const colorPastoOscuro = "#158242";
+    const colorInsecto = "#f1c40f";
+
+    // Colores adicionales para tiles extra
+    const colorRuinPath = "#6d5c4f";
+    const colorTent = "#c0392b";
+    const colorLilypad = "#27ae60";
+    const colorRuinWall = "#5d6d7e";
+
+    // Dimensiones fijas para todas las pantallas (Estilo NES Zelda)
+    const mapCols = 15;
+    const mapRows = 11;
+    canvas.width = mapCols * tileSize; // 480px
+    canvas.height = mapRows * tileSize; // 352px
+
+    // Off-screen canvas para el sistema de iluminación
+    const lightCanvas = document.createElement('canvas');
+    lightCanvas.width = canvas.width;
+    lightCanvas.height = canvas.height;
+    const lightCtx = lightCanvas.getContext("2d")!;
+
+    // =========================================================================
+    // 2. EL MUNDO (Zelda-style Grid System)
+    // =========================================================================
+    // 0=Camino, 1=Pared, 2=Agua, 4=Árbol, 5=Pasto, 6=Antorcha(Luz)
+    
+    // Habitación [0,0]: Inicio Bosque
+    const room_0_0 = {
+        type: 'forest', isDark: false,
+        map: [
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 5, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 4, 4, 0, 0, 0, 0, 0],
+            [1, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0],
+            [1, 5, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 1],
+            [1, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 1],
+            [1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1]
+        ]
+    };
+
+    // Habitación [0,1]: Lago
+    const room_0_1 = {
+        type: 'forest', isDark: false,
+        map: [
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 0, 0, 0, 0, 1],
+            [0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 0, 0, 0, 1],
+            [0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 0, 0, 0, 1],
+            [1, 0, 0, 0, 0, 0, 2, 2, 2, 2, 0, 0, 0, 0, 1],
+            [1, 0, 5, 0, 0, 0, 0, 2, 2, 0, 0, 0, 0, 0, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1]
+        ]
+    };
+
+    // Habitación [1,0]: Transición a Mazmorra
+    const room_1_0 = {
+        type: 'forest', isDark: false,
+        map: [
+            [1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 0, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 0, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [1, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 0, 0, 0, 0, 0, 4, 4, 0, 0, 0, 0, 0, 0, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        ]
+    };
+
+    // Habitación [1,1]: Mazmorra Oscura con Antorchas (6)
+    const room_1_1 = {
+        type: 'dungeon', isDark: true,
+        map: [
+            [1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 0, 1, 1, 6, 0, 0, 0, 0, 0, 6, 1, 1, 0, 1],
+            [1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1],
+            [0, 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 0, 1],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [0, 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 0, 1],
+            [1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1],
+            [1, 0, 1, 1, 6, 0, 0, 0, 0, 0, 6, 1, 1, 0, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        ]
+    };
+
+    // Matriz del Mundo 2x2
+    const world = [
+        [room_0_0, room_0_1],
+        [room_1_0, room_1_1]
+    ];
+
+    let currentRoomX = 0;
+    let currentRoomY = 0;
+
+    function getCurrentMap() {
+        return world[currentRoomY][currentRoomX].map;
+    }
+    function isCurrentRoomDark() {
+        return world[currentRoomY][currentRoomX].isDark;
+    }
+    function getCurrentBgType() {
+        return world[currentRoomY][currentRoomX].type;
+    }
+
+    // =========================================================================
+    // 3. ENTIDADES Y ESTADOS
+    // =========================================================================
+    const player = {
+        x: tileSize * 3.5, 
+        y: tileSize * 3.5, 
+        radius: 7,
+        normalSpeed: 1.2,
+        runSpeed: 2.2,
+        wasInWater: false,
+        lastDirX: 1, 
+        lastDirY: 0,
+        isDashing: false,
+        dashSpeed: 5.5,
+        dashTimer: 0,
+        dashDuration: 8,
+        dashCooldown: 0,
+        dashCooldownMax: 45,
+        dashDx: 0, dashDy: 0,
+        trail: [] as {x: number; y: number; age: number; maxAge: number}[]
+    };
+
+    // Entidades atadas a habitaciones específicas
+    const npc = {
+        roomX: 0, roomY: 0,
+        x: tileSize * 2.5, y: tileSize * 2.5, 
+        radius: 7, color: "#9b59b6"
+    };
+
+    const cow = {
+        roomX: 1, roomY: 0,
+        x: tileSize * 12.5, y: tileSize * 3.5, 
+        radius: 10, cowSpeed: 0.25,
+        vx: 0, vy: 0, timer: 0, wasInWater: false
+    };
+    
+    // Luciérnagas en el lago
+    const insects: {roomX: number; roomY: number; x: number; y: number; vx: number; vy: number; size: number; timer: number}[] = [];
+    const lakeCenterX = 8 * tileSize; 
+    const lakeCenterY = 5.5 * tileSize; 
+    for(let i = 0; i < 15; i++) {
+        insects.push({
+            roomX: 1, roomY: 0,
+            x: lakeCenterX + (Math.random() * 80 - 40),
+            y: lakeCenterY + (Math.random() * 80 - 40),
+            vx: Math.random() * 2 - 1, vy: Math.random() * 2 - 1,
+            size: Math.random() * 1.5 + 0.5, timer: 0
+        });
+    }
+
+    let activeRipples: {x: number; y: number; age: number; maxAge: number; maxRadius: number}[] = [];
+
+    // =========================================================================
+    // 4. INPUTS
+    // =========================================================================
+    const keys = { up: false, down: false, left: false, right: false, shift: false, space: false };
+
+    function handleKeyDown(e: KeyboardEvent) {
+        const k = e.key.toLowerCase();
+        let handled = true;
+        if (k === "arrowright" || k === "d") keys.right = true;
+        else if (k === "arrowleft" || k === "a") keys.left = true;
+        else if (k === "arrowup" || k === "w") keys.up = true;
+        else if (k === "arrowdown" || k === "s") keys.down = true;
+        else if (k === "shift") keys.shift = true;
+        else if (k === " " || e.code === "Space") keys.space = true;
+        else handled = false;
+        
+        if (handled) e.preventDefault();
+    }
+
+    function handleKeyUp(e: KeyboardEvent) {
+        const k = e.key.toLowerCase();
+        if (k === "arrowright" || k === "d") keys.right = false;
+        if (k === "arrowleft" || k === "a") keys.left = false;
+        if (k === "arrowup" || k === "w") keys.up = false;
+        if (k === "arrowdown" || k === "s") keys.down = false;
+        if (k === "shift") keys.shift = false;
+        if (k === " " || e.code === "Space") keys.space = false;
+    }
+
+    document.addEventListener("keydown", handleKeyDown);
+    document.addEventListener("keyup", handleKeyUp);
+
+    // =========================================================================
+    // 5. FÍSICAS, ENTORNO Y TRANSICIONES DE PANTALLA
+    // =========================================================================
+    function getTileTypeAt(x: number, y: number) {
+        const col = Math.floor(x / tileSize);
+        const row = Math.floor(y / tileSize);
+        if (row < 0 || row >= mapRows || col < 0 || col >= mapCols) return 1; 
+        return getCurrentMap()[row][col];
+    }
+    
+    function isSolidTile(tile: number) {
+        return tile === 1 || tile === 4 || tile === 6;
+    }
+
+    function isWaterAt(x: number, y: number) {
+        return getTileTypeAt(x, y) === 2;
+    }
+
+    function canMoveTo(newX: number, newY: number, entityRadius: number) {
+        const left = newX - entityRadius;
+        const right = newX + entityRadius;
+        const top = newY - entityRadius;
+        const bottom = newY + entityRadius;
+
+        const gridLeft = Math.floor(left / tileSize);
+        const gridRight = Math.floor(right / tileSize);
+        const gridTop = Math.floor(top / tileSize);
+        const gridBottom = Math.floor(bottom / tileSize);
+
+        if (gridLeft < 0 || gridRight >= mapCols || gridTop < 0 || gridBottom >= mapRows) return true;
+
+        const map = getCurrentMap();
+        if (isSolidTile(map[gridTop][gridLeft]) || 
+            isSolidTile(map[gridTop][gridRight]) || 
+            isSolidTile(map[gridBottom][gridLeft]) || 
+            isSolidTile(map[gridBottom][gridRight])) {
+            return false;
+        }
+        return true; 
+    }
+
+    // Lógica para cambiar de pantalla estilo Zelda
+    function checkScreenTransitions() {
+        let changed = false;
+        const offset = 3;
+
+        if (player.x < 0) {
+            if (currentRoomX > 0 && world[currentRoomY][currentRoomX - 1]) {
+                currentRoomX--;
+                player.x = canvas.width - player.radius - offset;
+                changed = true;
+            } else player.x = 0;
+        } 
+        else if (player.x > canvas.width) {
+            if (currentRoomX < world[0].length - 1 && world[currentRoomY][currentRoomX + 1]) {
+                currentRoomX++;
+                player.x = player.radius + offset;
+                changed = true;
+            } else player.x = canvas.width;
+        }
+        else if (player.y < 0) {
+            if (currentRoomY > 0 && world[currentRoomY - 1][currentRoomX]) {
+                currentRoomY--;
+                player.y = canvas.height - player.radius - offset;
+                changed = true;
+            } else player.y = 0;
+        }
+        else if (player.y > canvas.height) {
+            if (currentRoomY < world.length - 1 && world[currentRoomY + 1][currentRoomX]) {
+                currentRoomY++;
+                player.y = player.radius + offset;
+                changed = true;
+            } else player.y = canvas.height;
+        }
+
+        if (changed) {
+            activeRipples = [];
+            player.trail = [];
+        }
+    }
+
+    // =========================================================================
+    // 6. ACTUALIZACIÓN (LÓGICA)
+    // =========================================================================
+    function update() {
+        // A. Dash
+        if (player.dashCooldown > 0) player.dashCooldown--;
+        if (keys.space && player.dashCooldown <= 0 && !player.isDashing) {
+            player.isDashing = true;
+            player.dashTimer = player.dashDuration;
+            player.dashCooldown = player.dashCooldownMax;
+            
+            let dx = 0; let dy = 0;
+            if (keys.right) dx = 1; if (keys.left) dx = -1;
+            if (keys.up) dy = -1; if (keys.down) dy = 1;
+            if (dx === 0 && dy === 0) { dx = player.lastDirX; dy = player.lastDirY; }
+            
+            const mag = Math.sqrt(dx*dx + dy*dy);
+            player.dashDx = (dx / mag) * player.dashSpeed;
+            player.dashDy = (dy / mag) * player.dashSpeed;
+        }
+
+        let nextX = player.x;
+        let nextY = player.y;
+        const playerInWater = isWaterAt(player.x, player.y);
+
+        if (player.isDashing) {
+            player.dashTimer--;
+            nextX += player.dashDx; nextY += player.dashDy;
+            player.trail.push({x: player.x, y: player.y, age: 10, maxAge: 10});
+            if (player.dashTimer <= 0) player.isDashing = false;
+        } else {
+            let currentSpeed = keys.shift ? player.runSpeed : player.normalSpeed;
+            if (playerInWater) currentSpeed *= 0.5;
+
+            let moveX = 0; let moveY = 0;
+            if (keys.right) moveX += 1;
+            if (keys.left) moveX -= 1;
+            if (keys.up) moveY -= 1;
+            if (keys.down) moveY += 1;
+
+            if (moveX !== 0 || moveY !== 0) {
+                const mag = Math.sqrt(moveX * moveX + moveY * moveY);
+                nextX += (moveX / mag) * currentSpeed;
+                nextY += (moveY / mag) * currentSpeed;
+                
+                player.lastDirX = moveX > 0 ? 1 : (moveX < 0 ? -1 : 0);
+                player.lastDirY = moveY > 0 ? 1 : (moveY < 0 ? -1 : 0);
+            }
+
+            if (playerInWater && frame % 15 === 0 && (moveX !== 0 || moveY !== 0)) {
+                activeRipples.push({ x: player.x, y: player.y, age: 0, maxAge: 20, maxRadius: 8 });
+            }
+        }
+
+        if (nextX !== player.x && canMoveTo(nextX, player.y, player.radius)) player.x = nextX;
+        if (nextY !== player.y && canMoveTo(player.x, nextY, player.radius)) player.y = nextY;
+        
+        checkScreenTransitions();
+
+        // Rastro dash fade
+        for (let i = player.trail.length - 1; i >= 0; i--) {
+            player.trail[i].age--;
+            if (player.trail[i].age <= 0) player.trail.splice(i, 1);
+        }
+
+        if (playerInWater && !player.wasInWater && !player.isDashing) {
+            activeRipples.push({ x: player.x, y: player.y, age: 0, maxAge: 45, maxRadius: 20 });
+        }
+        player.wasInWater = playerInWater;
+
+        // B. Entidades
+        if (cow.roomX === currentRoomX && cow.roomY === currentRoomY) {
+            const cowInWater = isWaterAt(cow.x, cow.y);
+            if (cowInWater && !cow.wasInWater) activeRipples.push({ x: cow.x, y: cow.y, age: 0, maxAge: 45, maxRadius: 20 });
+            cow.wasInWater = cowInWater;
+            
+            cow.timer--;
+            if (cow.timer <= 0) {
+                const dirs = [ {x:1, y:0}, {x:-1, y:0}, {x:0, y:1}, {x:0, y:-1}, {x:0,y:0}, {x:0,y:0} ];
+                const dir = dirs[Math.floor(Math.random() * dirs.length)];
+                cow.vx = dir.x * cow.cowSpeed; cow.vy = dir.y * cow.cowSpeed;
+                cow.timer = (dir.x !== 0 || dir.y !== 0) ? 60 + Math.random()*60 : 120 + Math.random()*120;
+            }
+            if (cow.vx !== 0 && canMoveTo(cow.x + cow.vx, cow.y, cow.radius)) cow.x += cow.vx;
+            if (cow.vy !== 0 && canMoveTo(cow.x, cow.y + cow.vy, cow.radius)) cow.y += cow.vy;
+            if (cowInWater && frame % 20 === 0 && (cow.vx !== 0 || cow.vy !== 0)) {
+                activeRipples.push({ x: cow.x, y: cow.y, age: 0, maxAge: 25, maxRadius: 12 });
+            }
+        }
+
+        for(let i=0; i<insects.length; i++) {
+            const ins = insects[i];
+            if (ins.roomX === currentRoomX && ins.roomY === currentRoomY) {
+                ins.timer--;
+                if(ins.timer <= 0) {
+                    ins.vx += (Math.random() * 1 - 0.5); ins.vy += (Math.random() * 1 - 0.5);
+                    ins.timer = 15 + Math.random() * 30;
+                }
+                const speed = Math.sqrt(ins.vx*ins.vx + ins.vy*ins.vy);
+                if(speed > 1.2) { ins.vx = (ins.vx/speed)*1.2; ins.vy = (ins.vy/speed)*1.2; }
+
+                const dx = ins.x - lakeCenterX; const dy = ins.y - lakeCenterY;
+                const dist = Math.sqrt(dx*dx + dy*dy);
+                if (dist > 90) { ins.vx -= (dx/dist)*0.1; ins.vy -= (dy/dist)*0.1; }
+
+                ins.x += ins.vx; ins.y += ins.vy;
+            }
+        }
+    }
+
+    // =========================================================================
+    // 7. RENDERIZADO
+    // =========================================================================
+    function drawMap() {
+        const bgType = getCurrentBgType();
+        const map = getCurrentMap();
+        
+        const bgCol = bgType === 'dungeon' ? colorPisoDungeon : (bgType === 'ruins' ? "#5d6d7e" : colorPasto);
+        const wallCol = bgType === 'dungeon' ? colorWallDungeon : colorWall;
+
+        for (let row = 0; row < mapRows; row++) {
+            for (let col = 0; col < mapCols; col++) {
+                const tX = col * tileSize;
+                const tY = row * tileSize;
+                const tile = map[row][col];
+
+                if (tile === 10) {
+                    ctx.fillStyle = colorRuinPath;
+                } else {
+                    ctx.fillStyle = bgCol; 
+                }
+                ctx.fillRect(tX, tY, tileSize, tileSize);
+
+                if (tile === 1) {
+                    ctx.fillStyle = wallCol; 
+                    ctx.fillRect(tX, tY, tileSize, tileSize);
+                    ctx.fillStyle = "rgba(0,0,0,0.3)";
+                    ctx.fillRect(tX, tY + tileSize - 4, tileSize, 4);
+                } else if (tile === 2) {
+                    ctx.fillStyle = colorAgua; 
+                    ctx.fillRect(tX, tY, tileSize, tileSize);
+                } else if (tile === 4) {
+                    ctx.fillStyle = colorTronco;
+                    ctx.fillRect(tX + 12, tY + 16, 8, 16);
+                    ctx.beginPath(); ctx.arc(tX + 16, tY + 12, 14, 0, Math.PI*2);
+                    ctx.fillStyle = colorArbol; ctx.fill(); ctx.closePath();
+                    ctx.beginPath(); ctx.arc(tX + 12, tY + 8, 4, 0, Math.PI*2);
+                    ctx.fillStyle = "rgba(255,255,255,0.15)"; ctx.fill(); ctx.closePath();
+                } else if (tile === 5) {
+                    ctx.strokeStyle = colorPastoOscuro; ctx.lineWidth = 2; ctx.lineCap = "round";
+                    ctx.beginPath();
+                    ctx.moveTo(tX + 8, tY + 18); ctx.lineTo(tX + 12, tY + 10);
+                    ctx.moveTo(tX + 16, tY + 22); ctx.lineTo(tX + 20, tY + 12);
+                    ctx.moveTo(tX + 24, tY + 18); ctx.lineTo(tX + 28, tY + 14);
+                    ctx.stroke(); ctx.closePath();
+                } else if (tile === 6) {
+                    ctx.fillStyle = "#2c3e50"; 
+                    ctx.fillRect(tX + 10, tY + 10, 12, 22);
+                } else if (tile === 7) {
+                    ctx.fillStyle = colorTronco;
+                    ctx.fillRect(tX + 6, tY + 14, 20, 6);
+                    ctx.fillRect(tX + 13, tY + 8, 6, 18);
+                } else if (tile === 8) {
+                    ctx.fillStyle = colorTent;
+                    ctx.beginPath(); ctx.moveTo(tX + 16, tY + 2); ctx.lineTo(tX, tY + 28); ctx.lineTo(tX + 32, tY + 28); ctx.fill(); ctx.closePath();
+                    ctx.fillStyle = "#1a1a1a";
+                    ctx.beginPath(); ctx.moveTo(tX + 16, tY + 12); ctx.lineTo(tX + 8, tY + 28); ctx.lineTo(tX + 24, tY + 28); ctx.fill(); ctx.closePath();
+                } else if (tile === 9) {
+                    ctx.fillStyle = colorAgua;
+                    ctx.fillRect(tX, tY, tileSize, tileSize);
+                    ctx.fillStyle = colorLilypad;
+                    ctx.beginPath(); ctx.arc(tX + 16, tY + 16, 12, 0, Math.PI * 1.7); ctx.lineTo(tX + 16, tY + 16); ctx.fill(); ctx.closePath();
+                } else if (tile === 11) {
+                    ctx.fillStyle = colorRuinWall;
+                    ctx.fillRect(tX, tY, tileSize, tileSize);
+                    ctx.fillStyle = "rgba(0,0,0,0.4)";
+                    ctx.fillRect(tX, tY + tileSize - 6, tileSize, 6);
+                    ctx.fillStyle = "#27ae60";
+                    ctx.fillRect(tX + 2, tY + 2, 10, 6);
+                    ctx.fillRect(tX + 18, tY + 14, 8, 8);
+                }
+            }
+        }
+    }
+
+    function drawRipples() {
+        for (let i = activeRipples.length - 1; i >= 0; i--) {
+            const r = activeRipples[i];
+            r.age++; 
+            if (r.age >= r.maxAge) { activeRipples.splice(i, 1); continue; }
+            const progress = r.age / r.maxAge;
+            ctx.beginPath(); ctx.arc(r.x, r.y, progress * r.maxRadius, 0, Math.PI * 2);
+            ctx.globalAlpha = 1 - progress; 
+            ctx.strokeStyle = colorAguaHighlight; ctx.lineWidth = 2; ctx.stroke();
+            ctx.closePath();
+        }
+        ctx.globalAlpha = 1.0;
+    }
+
+    function drawEntities() {
+        // Luciérnagas
+        for(let i=0; i<insects.length; i++) {
+            const ins = insects[i];
+            if (ins.roomX === currentRoomX && ins.roomY === currentRoomY) {
+                ctx.beginPath(); ctx.arc(ins.x, ins.y, ins.size, 0, Math.PI*2);
+                ctx.fillStyle = colorInsecto; ctx.fill(); ctx.closePath();
+                ctx.beginPath(); ctx.arc(ins.x, ins.y, ins.size * 3, 0, Math.PI*2);
+                ctx.fillStyle = "rgba(241, 196, 15, 0.2)"; ctx.fill(); ctx.closePath();
+            }
+        }
+
+        // Vaca
+        if (cow.roomX === currentRoomX && cow.roomY === currentRoomY) {
+            ctx.beginPath(); ctx.arc(cow.x, cow.y, cow.radius, 0, Math.PI * 2);
+            ctx.fillStyle = "#fff"; ctx.fill(); ctx.closePath();
+            ctx.beginPath(); ctx.arc(cow.x - 3, cow.y - 3, 2, 0, Math.PI * 2);
+            ctx.fillStyle = "#000"; ctx.fill();
+            ctx.beginPath(); ctx.arc(cow.x + 3, cow.y + 4, 4, 0, Math.PI * 2); ctx.fill();
+            if (cow.wasInWater) {
+                ctx.fillStyle = "#1a73798f";
+                ctx.fillRect(cow.x - cow.radius, cow.y + cow.radius*0.5, cow.radius*2, cow.radius*0.5);
+            }
+        }
+
+        // NPC
+        if (npc.roomX === currentRoomX && npc.roomY === currentRoomY) {
+            ctx.beginPath(); ctx.arc(npc.x, npc.y, npc.radius, 0, Math.PI * 2);
+            ctx.fillStyle = npc.color; ctx.fill(); ctx.closePath();
+        }
+
+        // Jugador (Dash y Cuerpo)
+        for (let i = 0; i < player.trail.length; i++) {
+            const t = player.trail[i];
+            ctx.beginPath(); ctx.arc(t.x, t.y, player.radius, 0, Math.PI * 2);
+            ctx.fillStyle = "rgba(219, 174, 52, " + (t.age / t.maxAge * 0.5) + ")"; ctx.fill();
+        }
+        ctx.beginPath(); ctx.arc(player.x, player.y, player.radius, 0, Math.PI * 2);
+        ctx.fillStyle = (player.dashCooldown > 0 && frame % 10 < 5 && !player.isDashing) ? "#e67e22" : colorPlayer;
+        ctx.fill(); ctx.closePath();
+        if(player.wasInWater && !player.isDashing) {
+            ctx.fillStyle = "#1a73798f";
+            ctx.fillRect(player.x - player.radius, player.y + player.radius*0.5, player.radius*2, player.radius*0.5);
+        }
+    }
+
+    function drawLightingAndTorches() {
+        const map = getCurrentMap();
+        const fireSources: {x: number; y: number; type: number}[] = [];
+        
+        for (let row = 0; row < mapRows; row++) {
+            for (let col = 0; col < mapCols; col++) {
+                if (map[row][col] === 6 || map[row][col] === 7) {
+                    fireSources.push({
+                        x: col * tileSize + 16,
+                        y: row * tileSize + 16,
+                        type: map[row][col]
+                    });
+                }
+            }
+        }
+
+        if (isCurrentRoomDark()) {
+            lightCtx.globalCompositeOperation = "source-over";
+            lightCtx.fillStyle = "rgba(10, 10, 12, 0.96)";
+            lightCtx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            lightCtx.globalCompositeOperation = "destination-out";
+            
+            const pGradient = lightCtx.createRadialGradient(player.x, player.y, 10, player.x, player.y, 100);
+            pGradient.addColorStop(0, "rgba(255, 255, 255, 1)"); 
+            pGradient.addColorStop(1, "rgba(255, 255, 255, 0)"); 
+            lightCtx.fillStyle = pGradient;
+            lightCtx.beginPath(); lightCtx.arc(player.x, player.y, 100, 0, Math.PI * 2); lightCtx.fill();
+            
+            for(let i=0; i<fireSources.length; i++) {
+                const f = fireSources[i];
+                const rad = 110 + Math.random() * 10;
+                const tGradient = lightCtx.createRadialGradient(f.x, f.y, 5, f.x, f.y, rad);
+                tGradient.addColorStop(0, "rgba(255, 255, 255, 1)"); 
+                tGradient.addColorStop(1, "rgba(255, 255, 255, 0)"); 
+                lightCtx.fillStyle = tGradient;
+                lightCtx.beginPath(); lightCtx.arc(f.x, f.y, rad, 0, Math.PI * 2); lightCtx.fill();
+            }
+
+            ctx.drawImage(lightCanvas, 0, 0);
+        }
+
+        // Dibujar animaciones del fuego
+        for(let i=0; i<fireSources.length; i++) {
+            const f = fireSources[i];
+            const flicker = Math.random() * 4;
+            const yOffset = f.type === 6 ? -4 : 0;
+
+            ctx.beginPath();
+            ctx.arc(f.x, f.y + yOffset - flicker/2, 6 + flicker/3, 0, Math.PI*2);
+            ctx.fillStyle = "rgba(230, 126, 34, 0.8)";
+            ctx.fill(); ctx.closePath();
+            
+            ctx.beginPath();
+            ctx.arc(f.x, f.y + 2 + yOffset - flicker/2, 3, 0, Math.PI*2);
+            ctx.fillStyle = "rgba(241, 196, 15, 0.9)";
+            ctx.fill(); ctx.closePath();
+        }
+    }
+
+    function drawDialog() {
+        if (npc.roomX !== currentRoomX || npc.roomY !== currentRoomY) return;
+        
+        const dist = Math.sqrt(Math.pow(player.x - npc.x, 2) + Math.pow(player.y - npc.y, 2));
+        if (dist < 45) {
+            const boxW = 420; const boxH = 60;
+            const boxX = (canvas.width - boxW) / 2; const boxY = canvas.height - boxH - 15;
+            ctx.fillStyle = "rgba(0, 0, 0, 0.85)"; ctx.fillRect(boxX, boxY, boxW, boxH);
+            ctx.strokeStyle = "white"; ctx.lineWidth = 2; ctx.strokeRect(boxX, boxY, boxW, boxH);
+            ctx.fillStyle = "white"; ctx.font = "14px sans-serif"; ctx.textAlign = "center";
+            ctx.fillText("Encontraste este widget jaja, la verdad no pensé que", canvas.width / 2, boxY + 24);
+            ctx.fillText("nadie esculcara la instancia y lo encontrara, pero henos aquí.", canvas.width / 2, boxY + 44);
+        }
+    }
+
+    // =========================================================================
+    // LOOP
+    // =========================================================================
+    let animId: number;
+    function loop() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height); 
+        update(); 
+        drawMap(); 
+        drawRipples(); 
+        drawEntities();
+        drawLightingAndTorches();
+        drawDialog();
+        frame++;
+        animId = requestAnimationFrame(loop); 
+    }
+    loop();
+  })();
+</script>

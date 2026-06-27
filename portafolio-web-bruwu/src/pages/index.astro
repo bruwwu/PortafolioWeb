@@ -3,6 +3,7 @@ import "../styles/global.css";
 import ProyectoFeatured from "../components/ProyectoFeatured.astro";
 import ProyectoCard from "../components/ProyectoCard.astro";
 import MascotaInteractiva from "../components/MascotaInteractiva.astro";
+import TopDownRPG from "../components/TopDownRPG.astro";
 
 const proyectos = [
 	{
@@ -47,14 +48,7 @@ const proyectos = [
 		imagenUrl: "/images/CaminaOMuere.png",
 		link: "https://www.roblox.com/share?code=b63caaebfceffc4eadc8f2a02309b015&type=ExperienceDetails&stamp=1779918549344",
 	},
-	{
-		titulo: "Mini-Juego TopDown — ServiceNow",
-		año: 2026,
-		descripcion:
-			"Minijuego de vista top-down desarrollado completamente dentro de la plataforma ServiceNow usando HTML, CSS y JavaScript puro. Creado para demostrar habilidades de desarrollo web en un entorno enterprise. (La app principal que desarrollo bajo NDA aún no puede mostrarse)",
-		tags: ["ServiceNow", "HTML", "CSS", "JavaScript"],
-		imagenUrl: "/images/minijuegoSN.jpeg",
-	},
+
 ];
 
 const featured = proyectos.find((p) => p.destacado)!;
@@ -246,8 +240,26 @@ const resto = proyectos.filter((p) => !p.destacado);
 						}
 					</div>
 				</section>
-			</div>
-		</main>
+
+			<!-- Sección jugable — Mini-Juego TopDown -->
+			<section class="showcase__playable" aria-label="Mini-juego interactivo">
+				<div class="playable__header">
+					<h3 class="playable__titulo">🎮 Mini-Juego TopDown — ServiceNow</h3>
+					<p class="playable__desc">
+						Minijuego de vista top-down desarrollado completamente dentro de la plataforma ServiceNow usando HTML, CSS y JavaScript puro.
+						Creado para demostrar habilidades de desarrollo web en un entorno enterprise.
+					</p>
+					<ul class="playable__tags">
+						<li>ServiceNow</li>
+						<li>HTML</li>
+						<li>CSS</li>
+						<li>JavaScript</li>
+					</ul>
+				</div>
+				<TopDownRPG />
+			</section>
+		</div>
+	</main>
 
 		<!-- ═══════════════════════════
          FOOTER
@@ -526,6 +538,57 @@ const resto = proyectos.filter((p) => !p.destacado);
 		display: grid;
 		grid-template-columns: repeat(3, 1fr);
 		gap: 1.25rem;
+	}
+
+	/* ── Playable Section ─────────────── */
+	.showcase__playable {
+		background: #1a1a1a;
+		border-radius: var(--radio-lg, 16px);
+		border: 1px solid rgba(255, 255, 255, 0.08);
+		overflow: hidden;
+		box-shadow: 0 8px 40px rgba(0, 0, 0, 0.25);
+	}
+
+	.playable__header {
+		padding: 2rem 2rem 0;
+		text-align: center;
+	}
+
+	.playable__titulo {
+		font-family: "Poppins", sans-serif;
+		font-size: 1.15rem;
+		font-weight: 700;
+		color: #fff;
+		margin: 0 0 0.75rem;
+	}
+
+	.playable__desc {
+		font-size: 0.88rem;
+		color: #bdc3c7;
+		line-height: 1.7;
+		max-width: 600px;
+		margin: 0 auto 1rem;
+	}
+
+	.playable__tags {
+		display: flex;
+		justify-content: center;
+		flex-wrap: wrap;
+		gap: 0.4rem;
+		list-style: none;
+		padding: 0;
+		margin: 0 0 0.5rem;
+	}
+
+	.playable__tags li {
+		padding: 3px 12px;
+		border-radius: var(--radio-pill, 50px);
+		background: rgba(249, 168, 37, 0.15);
+		border: 1px solid rgba(249, 168, 37, 0.35);
+		color: #f9a825;
+		font-size: 0.7rem;
+		font-weight: 600;
+		font-family: "Poppins", sans-serif;
 	}
 
 	/* ── Footer ────────────────────────── */
