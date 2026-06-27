@@ -87,10 +87,16 @@
     const colorInsecto = "#f1c40f";
 
     // Colores adicionales para tiles extra
-    const colorRuinPath = "#6d5c4f";
-    const colorTent = "#c0392b";
+    const colorRuinPath = "#4a3f35";
+    const colorTent = "#8e4430";
     const colorLilypad = "#27ae60";
     const colorRuinWall = "#5d6d7e";
+    const colorCrystal = "#8e44ad";
+    const colorCrystalGlow = "rgba(155, 89, 182, 0.3)";
+    const colorLakeDeep = "#1a5276";
+    const colorLakeShore = "#2e86c1";
+    const colorSand = "#d4b896";
+    const colorRuinFloor = "#3d3328";
 
     // Dimensiones fijas para todas las pantallas (Estilo NES Zelda)
     const mapCols = 15;
@@ -108,56 +114,58 @@
     // 2. EL MUNDO (Zelda-style Grid System)
     // =========================================================================
     // 0=Camino, 1=Pared, 2=Agua, 4=Árbol, 5=Pasto, 6=Antorcha(Luz)
+    // 7=Fogata, 8=Tienda, 9=Nenúfar, 10=Camino Ruinas, 11=Pared Ruinas, 12=Cristal
+    // 13=Arena/Orilla
     
-    // Habitación [0,0]: Inicio Bosque
+    // Habitación [0,0]: Campamento del Bosque
     const room_0_0 = {
         type: 'forest', isDark: false,
         map: [
             [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-            [1, 5, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-            [1, 0, 0, 0, 0, 0, 0, 0, 4, 4, 0, 0, 0, 0, 0],
-            [1, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0],
-            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0],
-            [1, 5, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 1],
-            [1, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-            [1, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 1],
+            [1, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 1],
+            [1, 0, 8, 0, 0, 0, 5, 0, 5, 0, 0, 0, 8, 0, 1],
+            [1, 0, 0, 0, 5, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0],
+            [1, 4, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [1, 0, 8, 0, 5, 0, 0, 0, 0, 0, 5, 0, 8, 0, 1],
+            [1, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 1],
+            [1, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 1],
             [1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1],
             [1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1]
         ]
     };
 
-    // Habitación [0,1]: Lago
+    // Habitación [0,1]: Zona del Lago
     const room_0_1 = {
-        type: 'forest', isDark: false,
+        type: 'lake', isDark: false,
         map: [
             [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 1],
-            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-            [0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 0, 0, 0, 0, 1],
-            [0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 0, 0, 0, 1],
-            [0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 0, 0, 0, 1],
-            [1, 0, 0, 0, 0, 0, 2, 2, 2, 2, 0, 0, 0, 0, 1],
-            [1, 0, 5, 0, 0, 0, 0, 2, 2, 0, 0, 0, 0, 0, 1],
-            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 5, 0, 0, 5, 13,13,13,13,13, 5, 0, 0, 5, 1],
+            [1, 0, 0, 5, 13, 2, 2, 2, 2, 2, 13, 5, 0, 0, 1],
+            [0, 0, 0, 13, 2, 2, 9, 2, 2, 9, 2, 13, 0, 0, 1],
+            [0, 0, 0, 13, 2, 2, 2, 2, 2, 2, 2, 13, 0, 0, 1],
+            [0, 0, 0, 13, 2, 9, 2, 2, 2, 2, 9, 13, 0, 0, 1],
+            [1, 0, 0, 5, 13, 2, 2, 2, 2, 2, 13, 5, 0, 0, 1],
+            [1, 0, 0, 0, 5, 13, 9, 2, 9, 13, 5, 0, 0, 0, 1],
+            [1, 5, 0, 0, 0, 5, 13,13,13, 5, 0, 0, 0, 5, 1],
             [1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1],
             [1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1]
         ]
     };
 
-    // Habitación [1,0]: Transición a Mazmorra
+    // Habitación [1,0]: Ruinas Ancestrales (mística, con cristales)
     const room_1_0 = {
-        type: 'forest', isDark: false,
+        type: 'ruins', isDark: false,
         map: [
             [1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1],
-            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-            [1, 0, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-            [1, 0, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [1, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 1],
-            [1, 0, 0, 0, 0, 0, 4, 4, 0, 0, 0, 0, 0, 0, 1],
+            [1, 10,10,10,10,10,10,10,10,10,10,10,10,10, 1],
+            [1, 10,11, 0, 0, 5, 0, 0, 0, 5, 0, 0,11,10, 1],
+            [1, 10, 0, 0, 0, 0, 0,12, 0, 0, 0, 0, 0,10, 1],
+            [1, 10, 0, 0,11, 0, 0, 0, 0, 0,11, 0, 0,10, 0],
+            [1, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,10, 0],
+            [1, 10, 0, 0,11, 0, 0, 0, 0, 0,11, 0, 0,10, 0],
+            [1, 10, 0, 0, 0, 0, 0,12, 0, 0, 0, 0, 0,10, 1],
+            [1, 10,11, 0, 0, 5, 0, 0, 0, 5, 0, 0,11,10, 1],
             [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
             [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
         ]
@@ -224,29 +232,44 @@
 
     // Entidades atadas a habitaciones específicas
     const npc = {
-        roomX: 0, roomY: 0,
-        x: tileSize * 2.5, y: tileSize * 2.5, 
+        roomX: 0, roomY: 0, // Vive en el campamento
+        x: tileSize * 5.5, y: tileSize * 4.5, // Cerca de la fogata
         radius: 7, color: "#9b59b6"
     };
 
     const cow = {
-        roomX: 1, roomY: 0,
-        x: tileSize * 12.5, y: tileSize * 3.5, 
+        roomX: 1, roomY: 0, // Vive en el lago (room_0_1 = currentRoomX=1, currentRoomY=0)
+        x: tileSize * 12.5, y: tileSize * 2.5, 
         radius: 10, cowSpeed: 0.25,
         vx: 0, vy: 0, timer: 0, wasInWater: false
     };
     
-    // Luciérnagas en el lago
+    // Luciérnagas en el lago (room [0,1])
     const insects: {roomX: number; roomY: number; x: number; y: number; vx: number; vy: number; size: number; timer: number}[] = [];
-    const lakeCenterX = 8 * tileSize; 
-    const lakeCenterY = 5.5 * tileSize; 
-    for(let i = 0; i < 15; i++) {
+    const lakeCenterX = 7.5 * tileSize; 
+    const lakeCenterY = 4.5 * tileSize; 
+    for(let i = 0; i < 20; i++) {
         insects.push({
             roomX: 1, roomY: 0,
-            x: lakeCenterX + (Math.random() * 80 - 40),
+            x: lakeCenterX + (Math.random() * 100 - 50),
             y: lakeCenterY + (Math.random() * 80 - 40),
             vx: Math.random() * 2 - 1, vy: Math.random() * 2 - 1,
             size: Math.random() * 1.5 + 0.5, timer: 0
+        });
+    }
+
+    // Partículas de cristal para las Ruinas (room [1,0])
+    const crystalParticles: {roomX: number; roomY: number; x: number; y: number; vx: number; vy: number; size: number; alpha: number; maxAlpha: number; life: number; maxLife: number}[] = [];
+    function spawnCrystalParticle(cx: number, cy: number) {
+        crystalParticles.push({
+            roomX: 0, roomY: 1,
+            x: cx + (Math.random() * 20 - 10),
+            y: cy + (Math.random() * 20 - 10),
+            vx: (Math.random() - 0.5) * 0.4,
+            vy: -Math.random() * 0.6 - 0.2,
+            size: Math.random() * 2 + 1,
+            alpha: 0, maxAlpha: Math.random() * 0.7 + 0.3,
+            life: 0, maxLife: 60 + Math.random() * 60
         });
     }
 
@@ -295,11 +318,12 @@
     }
     
     function isSolidTile(tile: number) {
-        return tile === 1 || tile === 4 || tile === 6;
+        return tile === 1 || tile === 4 || tile === 6 || tile === 7 || tile === 8 || tile === 11 || tile === 12;
     }
 
     function isWaterAt(x: number, y: number) {
-        return getTileTypeAt(x, y) === 2;
+        const t = getTileTypeAt(x, y);
+        return t === 2 || t === 9; // Agua y nenúfares (agua con planta)
     }
 
     function canMoveTo(newX: number, newY: number, entityRadius: number) {
@@ -473,6 +497,29 @@
                 ins.x += ins.vx; ins.y += ins.vy;
             }
         }
+
+        // C. Partículas de cristal en las ruinas
+        if (currentRoomX === 0 && currentRoomY === 1) {
+            // Generar partículas desde los cristales (tile 12)
+            const ruinsMap = world[1][0].map;
+            for (let r = 0; r < mapRows; r++) {
+                for (let c = 0; c < mapCols; c++) {
+                    if (ruinsMap[r][c] === 12 && Math.random() < 0.08) {
+                        spawnCrystalParticle(c * tileSize + 16, r * tileSize + 16);
+                    }
+                }
+            }
+        }
+        // Actualizar partículas de cristal
+        for (let i = crystalParticles.length - 1; i >= 0; i--) {
+            const p = crystalParticles[i];
+            p.life++;
+            if (p.life >= p.maxLife) { crystalParticles.splice(i, 1); continue; }
+            p.x += p.vx;
+            p.y += p.vy;
+            const progress = p.life / p.maxLife;
+            p.alpha = progress < 0.3 ? (progress / 0.3) * p.maxAlpha : p.maxAlpha * (1 - (progress - 0.3) / 0.7);
+        }
     }
 
     // =========================================================================
@@ -482,8 +529,12 @@
         const bgType = getCurrentBgType();
         const map = getCurrentMap();
         
-        const bgCol = bgType === 'dungeon' ? colorPisoDungeon : (bgType === 'ruins' ? "#5d6d7e" : colorPasto);
-        const wallCol = bgType === 'dungeon' ? colorWallDungeon : colorWall;
+        let bgCol: string;
+        let wallCol: string;
+        if (bgType === 'dungeon') { bgCol = colorPisoDungeon; wallCol = colorWallDungeon; }
+        else if (bgType === 'ruins') { bgCol = colorRuinFloor; wallCol = colorWall; }
+        else if (bgType === 'lake') { bgCol = colorPasto; wallCol = colorWall; }
+        else { bgCol = colorPasto; wallCol = colorWall; }
 
         for (let row = 0; row < mapRows; row++) {
             for (let col = 0; col < mapCols; col++) {
@@ -491,21 +542,30 @@
                 const tY = row * tileSize;
                 const tile = map[row][col];
 
+                // Capa base
                 if (tile === 10) {
                     ctx.fillStyle = colorRuinPath;
+                } else if (tile === 13) {
+                    ctx.fillStyle = colorSand;
                 } else {
                     ctx.fillStyle = bgCol; 
                 }
                 ctx.fillRect(tX, tY, tileSize, tileSize);
 
+                // Elementos sobre la base
                 if (tile === 1) {
                     ctx.fillStyle = wallCol; 
                     ctx.fillRect(tX, tY, tileSize, tileSize);
                     ctx.fillStyle = "rgba(0,0,0,0.3)";
                     ctx.fillRect(tX, tY + tileSize - 4, tileSize, 4);
                 } else if (tile === 2) {
+                    // Agua con profundidad visual
                     ctx.fillStyle = colorAgua; 
                     ctx.fillRect(tX, tY, tileSize, tileSize);
+                    // Brillo de ola animada
+                    const wave = Math.sin(frame * 0.04 + col * 0.8 + row * 0.5) * 0.15 + 0.1;
+                    ctx.fillStyle = `rgba(255,255,255,${wave})`;
+                    ctx.fillRect(tX, tY + 4 + Math.sin(frame * 0.03 + col) * 3, tileSize, 3);
                 } else if (tile === 4) {
                     ctx.fillStyle = colorTronco;
                     ctx.fillRect(tX + 12, tY + 16, 8, 16);
@@ -514,37 +574,132 @@
                     ctx.beginPath(); ctx.arc(tX + 12, tY + 8, 4, 0, Math.PI*2);
                     ctx.fillStyle = "rgba(255,255,255,0.15)"; ctx.fill(); ctx.closePath();
                 } else if (tile === 5) {
-                    ctx.strokeStyle = colorPastoOscuro; ctx.lineWidth = 2; ctx.lineCap = "round";
+                    // Pasto que se mece con el viento
+                    const sway = Math.sin(frame * 0.05 + col * 2 + row) * 2;
+                    ctx.strokeStyle = bgType === 'ruins' ? '#4a6741' : colorPastoOscuro;
+                    ctx.lineWidth = 2; ctx.lineCap = "round";
                     ctx.beginPath();
-                    ctx.moveTo(tX + 8, tY + 18); ctx.lineTo(tX + 12, tY + 10);
-                    ctx.moveTo(tX + 16, tY + 22); ctx.lineTo(tX + 20, tY + 12);
-                    ctx.moveTo(tX + 24, tY + 18); ctx.lineTo(tX + 28, tY + 14);
+                    ctx.moveTo(tX + 8, tY + 20); ctx.lineTo(tX + 12 + sway, tY + 10);
+                    ctx.moveTo(tX + 16, tY + 22); ctx.lineTo(tX + 20 + sway, tY + 11);
+                    ctx.moveTo(tX + 24, tY + 20); ctx.lineTo(tX + 28 + sway, tY + 13);
                     ctx.stroke(); ctx.closePath();
                 } else if (tile === 6) {
                     ctx.fillStyle = "#2c3e50"; 
                     ctx.fillRect(tX + 10, tY + 10, 12, 22);
                 } else if (tile === 7) {
+                    // Fogata: troncos cruzados
                     ctx.fillStyle = colorTronco;
-                    ctx.fillRect(tX + 6, tY + 14, 20, 6);
-                    ctx.fillRect(tX + 13, tY + 8, 6, 18);
+                    ctx.save();
+                    ctx.translate(tX + 16, tY + 20);
+                    ctx.rotate(0.4);
+                    ctx.fillRect(-12, -3, 24, 5);
+                    ctx.rotate(-0.8);
+                    ctx.fillRect(-12, -3, 24, 5);
+                    ctx.restore();
+                    // Piedras alrededor
+                    ctx.fillStyle = "#7f8c8d";
+                    const stones = [{x:3,y:22},{x:10,y:26},{x:20,y:26},{x:27,y:22},{x:27,y:14},{x:20,y:10},{x:10,y:10},{x:3,y:14}];
+                    stones.forEach(s => {
+                        ctx.beginPath(); ctx.arc(tX + s.x, tY + s.y, 3, 0, Math.PI * 2); ctx.fill();
+                    });
                 } else if (tile === 8) {
+                    // Tienda de campaña mejorada
                     ctx.fillStyle = colorTent;
-                    ctx.beginPath(); ctx.moveTo(tX + 16, tY + 2); ctx.lineTo(tX, tY + 28); ctx.lineTo(tX + 32, tY + 28); ctx.fill(); ctx.closePath();
+                    ctx.beginPath(); ctx.moveTo(tX + 16, tY + 2); ctx.lineTo(tX + 1, tY + 28); ctx.lineTo(tX + 31, tY + 28); ctx.fill(); ctx.closePath();
+                    // Sombra del techo
+                    ctx.fillStyle = "rgba(0,0,0,0.25)";
+                    ctx.beginPath(); ctx.moveTo(tX + 16, tY + 8); ctx.lineTo(tX + 4, tY + 28); ctx.lineTo(tX + 28, tY + 28); ctx.fill(); ctx.closePath();
+                    // Entrada oscura
                     ctx.fillStyle = "#1a1a1a";
-                    ctx.beginPath(); ctx.moveTo(tX + 16, tY + 12); ctx.lineTo(tX + 8, tY + 28); ctx.lineTo(tX + 24, tY + 28); ctx.fill(); ctx.closePath();
+                    ctx.beginPath(); ctx.moveTo(tX + 16, tY + 14); ctx.lineTo(tX + 10, tY + 28); ctx.lineTo(tX + 22, tY + 28); ctx.fill(); ctx.closePath();
+                    // Franja decorativa
+                    ctx.strokeStyle = "#f39c12"; ctx.lineWidth = 1.5;
+                    ctx.beginPath(); ctx.moveTo(tX + 8, tY + 16); ctx.lineTo(tX + 16, tY + 5); ctx.lineTo(tX + 24, tY + 16); ctx.stroke();
                 } else if (tile === 9) {
+                    // Nenúfar sobre agua
                     ctx.fillStyle = colorAgua;
                     ctx.fillRect(tX, tY, tileSize, tileSize);
+                    // Olas
+                    const wave = Math.sin(frame * 0.04 + col * 0.8 + row * 0.5) * 0.12 + 0.08;
+                    ctx.fillStyle = `rgba(255,255,255,${wave})`;
+                    ctx.fillRect(tX, tY + 4 + Math.sin(frame * 0.03 + col) * 3, tileSize, 3);
+                    // Nenúfar con movimiento sutil
+                    const lilyBob = Math.sin(frame * 0.04 + col + row) * 1.5;
                     ctx.fillStyle = colorLilypad;
-                    ctx.beginPath(); ctx.arc(tX + 16, tY + 16, 12, 0, Math.PI * 1.7); ctx.lineTo(tX + 16, tY + 16); ctx.fill(); ctx.closePath();
+                    ctx.beginPath(); ctx.arc(tX + 16, tY + 16 + lilyBob, 10, 0, Math.PI * 1.7); ctx.lineTo(tX + 16, tY + 16 + lilyBob); ctx.fill(); ctx.closePath();
+                    // Flor pequeña en el nenúfar
+                    ctx.fillStyle = "#f8c8dc";
+                    ctx.beginPath(); ctx.arc(tX + 18, tY + 14 + lilyBob, 3, 0, Math.PI * 2); ctx.fill(); ctx.closePath();
+                    ctx.fillStyle = "#f1c40f";
+                    ctx.beginPath(); ctx.arc(tX + 18, tY + 14 + lilyBob, 1.5, 0, Math.PI * 2); ctx.fill(); ctx.closePath();
+                } else if (tile === 10) {
+                    // Camino de piedra de ruinas (más detalle)
+                    ctx.fillStyle = "rgba(0,0,0,0.15)";
+                    ctx.fillRect(tX, tY, 1, tileSize); // Grieta izq
+                    ctx.fillRect(tX + tileSize - 1, tY, 1, tileSize); // Grieta der
+                    ctx.fillRect(tX, tY, tileSize, 1); // Grieta arr
+                    ctx.fillRect(tX, tY + tileSize - 1, tileSize, 1); // Grieta abj
+                    // Musgo aleatorio (basado en posición para que sea determinístico)
+                    if ((row + col) % 3 === 0) {
+                        ctx.fillStyle = "rgba(39, 174, 96, 0.3)";
+                        ctx.fillRect(tX + 2, tY + 2, 6, 4);
+                    }
                 } else if (tile === 11) {
+                    // Pared de ruinas ancestrales
                     ctx.fillStyle = colorRuinWall;
                     ctx.fillRect(tX, tY, tileSize, tileSize);
-                    ctx.fillStyle = "rgba(0,0,0,0.4)";
+                    // Grietas
+                    ctx.fillStyle = "rgba(0,0,0,0.35)";
                     ctx.fillRect(tX, tY + tileSize - 6, tileSize, 6);
+                    ctx.fillRect(tX + 8, tY + 4, 2, 12);
+                    ctx.fillRect(tX + 20, tY + 10, 2, 8);
+                    // Musgo creciendo
                     ctx.fillStyle = "#27ae60";
-                    ctx.fillRect(tX + 2, tY + 2, 10, 6);
-                    ctx.fillRect(tX + 18, tY + 14, 8, 8);
+                    ctx.fillRect(tX + 1, tY + 1, 8, 5);
+                    ctx.fillRect(tX + 22, tY + 16, 7, 6);
+                    ctx.fillStyle = "rgba(39, 174, 96, 0.4)";
+                    ctx.fillRect(tX + 12, tY + 24, 10, 4);
+                } else if (tile === 12) {
+                    // Cristal místico pulsante
+                    const pulse = Math.sin(frame * 0.06) * 0.3 + 0.7;
+                    const glowRadius = 30 + Math.sin(frame * 0.04) * 5;
+                    // Aura de brillo
+                    const grad = ctx.createRadialGradient(tX + 16, tY + 16, 4, tX + 16, tY + 16, glowRadius);
+                    grad.addColorStop(0, `rgba(155, 89, 182, ${pulse * 0.4})`);
+                    grad.addColorStop(0.5, `rgba(155, 89, 182, ${pulse * 0.15})`);
+                    grad.addColorStop(1, "rgba(155, 89, 182, 0)");
+                    ctx.fillStyle = grad;
+                    ctx.fillRect(tX - 10, tY - 10, tileSize + 20, tileSize + 20);
+                    // Base de piedra
+                    ctx.fillStyle = "#5d6d7e";
+                    ctx.fillRect(tX + 8, tY + 22, 16, 8);
+                    // Cristal (forma de diamante)
+                    ctx.fillStyle = `rgba(155, 89, 182, ${pulse})`;
+                    ctx.beginPath();
+                    ctx.moveTo(tX + 16, tY + 4);  // Punta arriba
+                    ctx.lineTo(tX + 24, tY + 16); // Derecha
+                    ctx.lineTo(tX + 16, tY + 24); // Abajo
+                    ctx.lineTo(tX + 8, tY + 16);  // Izquierda
+                    ctx.closePath(); ctx.fill();
+                    // Brillo interior
+                    ctx.fillStyle = `rgba(220, 190, 255, ${pulse * 0.7})`;
+                    ctx.beginPath();
+                    ctx.moveTo(tX + 16, tY + 8);
+                    ctx.lineTo(tX + 20, tY + 16);
+                    ctx.lineTo(tX + 16, tY + 20);
+                    ctx.lineTo(tX + 12, tY + 16);
+                    ctx.closePath(); ctx.fill();
+                } else if (tile === 13) {
+                    // Arena/Orilla del lago — textura de arena
+                    // Ya se pintó el fondo como colorSand arriba
+                    ctx.fillStyle = "rgba(0,0,0,0.06)";
+                    // Pequeñas piedras decorativas
+                    if ((row * 7 + col * 3) % 5 === 0) {
+                        ctx.beginPath(); ctx.arc(tX + 10, tY + 20, 2, 0, Math.PI * 2); ctx.fill();
+                    }
+                    if ((row * 3 + col * 7) % 4 === 0) {
+                        ctx.beginPath(); ctx.arc(tX + 22, tY + 12, 1.5, 0, Math.PI * 2); ctx.fill();
+                    }
                 }
             }
         }
@@ -569,10 +724,22 @@
         for(let i=0; i<insects.length; i++) {
             const ins = insects[i];
             if (ins.roomX === currentRoomX && ins.roomY === currentRoomY) {
+                const flicker = Math.sin(frame * 0.15 + i * 2) * 0.3 + 0.7;
                 ctx.beginPath(); ctx.arc(ins.x, ins.y, ins.size, 0, Math.PI*2);
-                ctx.fillStyle = colorInsecto; ctx.fill(); ctx.closePath();
-                ctx.beginPath(); ctx.arc(ins.x, ins.y, ins.size * 3, 0, Math.PI*2);
-                ctx.fillStyle = "rgba(241, 196, 15, 0.2)"; ctx.fill(); ctx.closePath();
+                ctx.fillStyle = colorInsecto; ctx.globalAlpha = flicker; ctx.fill(); ctx.closePath();
+                ctx.beginPath(); ctx.arc(ins.x, ins.y, ins.size * 4, 0, Math.PI*2);
+                ctx.fillStyle = `rgba(241, 196, 15, ${0.15 * flicker})`; ctx.fill(); ctx.closePath();
+                ctx.globalAlpha = 1;
+            }
+        }
+
+        // Partículas de cristal (ruinas)
+        for(let i=0; i<crystalParticles.length; i++) {
+            const p = crystalParticles[i];
+            if (currentRoomX === 0 && currentRoomY === 1) {
+                ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI*2);
+                ctx.fillStyle = `rgba(200, 160, 255, ${p.alpha})`;
+                ctx.fill(); ctx.closePath();
             }
         }
 
@@ -580,19 +747,38 @@
         if (cow.roomX === currentRoomX && cow.roomY === currentRoomY) {
             ctx.beginPath(); ctx.arc(cow.x, cow.y, cow.radius, 0, Math.PI * 2);
             ctx.fillStyle = "#fff"; ctx.fill(); ctx.closePath();
-            ctx.beginPath(); ctx.arc(cow.x - 3, cow.y - 3, 2, 0, Math.PI * 2);
+            // Manchas
+            ctx.beginPath(); ctx.arc(cow.x - 4, cow.y - 2, 3, 0, Math.PI * 2);
+            ctx.fillStyle = "#8e6e53"; ctx.fill();
+            ctx.beginPath(); ctx.arc(cow.x + 4, cow.y + 3, 4, 0, Math.PI * 2); ctx.fill();
+            // Ojos
+            ctx.beginPath(); ctx.arc(cow.x - 3, cow.y - 5, 1.5, 0, Math.PI * 2);
             ctx.fillStyle = "#000"; ctx.fill();
-            ctx.beginPath(); ctx.arc(cow.x + 3, cow.y + 4, 4, 0, Math.PI * 2); ctx.fill();
+            ctx.beginPath(); ctx.arc(cow.x + 3, cow.y - 5, 1.5, 0, Math.PI * 2); ctx.fill();
             if (cow.wasInWater) {
                 ctx.fillStyle = "#1a73798f";
                 ctx.fillRect(cow.x - cow.radius, cow.y + cow.radius*0.5, cow.radius*2, cow.radius*0.5);
             }
         }
 
-        // NPC
+        // NPC (con detalle: sombrero y capa)
         if (npc.roomX === currentRoomX && npc.roomY === currentRoomY) {
+            // Sombra
+            ctx.beginPath(); ctx.ellipse(npc.x, npc.y + 8, 8, 3, 0, 0, Math.PI * 2);
+            ctx.fillStyle = "rgba(0,0,0,0.2)"; ctx.fill(); ctx.closePath();
+            // Cuerpo
             ctx.beginPath(); ctx.arc(npc.x, npc.y, npc.radius, 0, Math.PI * 2);
             ctx.fillStyle = npc.color; ctx.fill(); ctx.closePath();
+            // Sombrero puntiagudo
+            ctx.fillStyle = "#6c3483";
+            ctx.beginPath(); ctx.moveTo(npc.x, npc.y - 16); ctx.lineTo(npc.x - 8, npc.y - 4); ctx.lineTo(npc.x + 8, npc.y - 4); ctx.fill(); ctx.closePath();
+            // Ala del sombrero
+            ctx.fillStyle = "#5b2c6f";
+            ctx.fillRect(npc.x - 10, npc.y - 5, 20, 3);
+            // Ojos brillantes
+            ctx.fillStyle = "#f1c40f";
+            ctx.beginPath(); ctx.arc(npc.x - 3, npc.y - 1, 1.5, 0, Math.PI * 2); ctx.fill();
+            ctx.beginPath(); ctx.arc(npc.x + 3, npc.y - 1, 1.5, 0, Math.PI * 2); ctx.fill();
         }
 
         // Jugador (Dash y Cuerpo)
@@ -601,12 +787,50 @@
             ctx.beginPath(); ctx.arc(t.x, t.y, player.radius, 0, Math.PI * 2);
             ctx.fillStyle = "rgba(219, 174, 52, " + (t.age / t.maxAge * 0.5) + ")"; ctx.fill();
         }
+        // Sombra del jugador
+        ctx.beginPath(); ctx.ellipse(player.x, player.y + 8, 7, 3, 0, 0, Math.PI * 2);
+        ctx.fillStyle = "rgba(0,0,0,0.2)"; ctx.fill(); ctx.closePath();
+        // Cuerpo
         ctx.beginPath(); ctx.arc(player.x, player.y, player.radius, 0, Math.PI * 2);
         ctx.fillStyle = (player.dashCooldown > 0 && frame % 10 < 5 && !player.isDashing) ? "#e67e22" : colorPlayer;
         ctx.fill(); ctx.closePath();
+        // Ojos del jugador
+        ctx.fillStyle = "#2c3e50";
+        ctx.beginPath(); ctx.arc(player.x - 2 + player.lastDirX * 2, player.y - 2 + player.lastDirY * 2, 1.5, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.arc(player.x + 3 + player.lastDirX * 2, player.y - 2 + player.lastDirY * 2, 1.5, 0, Math.PI * 2); ctx.fill();
         if(player.wasInWater && !player.isDashing) {
             ctx.fillStyle = "#1a73798f";
             ctx.fillRect(player.x - player.radius, player.y + player.radius*0.5, player.radius*2, player.radius*0.5);
+        }
+    }
+
+    // Ambiente cálido para el campamento
+    function drawAmbientEffects() {
+        const bgType = getCurrentBgType();
+        
+        // Resplandor cálido de la fogata en el campamento
+        if (bgType === 'forest' && currentRoomX === 0 && currentRoomY === 0) {
+            const campfireX = 7 * tileSize + 16;
+            const campfireY = 4 * tileSize + 16;
+            const warmFlicker = Math.sin(frame * 0.08) * 15 + 120;
+            const warmGrad = ctx.createRadialGradient(campfireX, campfireY, 20, campfireX, campfireY, warmFlicker);
+            warmGrad.addColorStop(0, "rgba(255, 160, 40, 0.12)");
+            warmGrad.addColorStop(0.6, "rgba(255, 100, 20, 0.05)");
+            warmGrad.addColorStop(1, "rgba(255, 80, 0, 0)");
+            ctx.fillStyle = warmGrad;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+        }
+
+        // Bruma mística en las ruinas
+        if (bgType === 'ruins') {
+            ctx.fillStyle = `rgba(100, 60, 150, ${0.04 + Math.sin(frame * 0.02) * 0.02})`;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+        }
+
+        // Tinte azulado nocturno en el lago
+        if (bgType === 'lake') {
+            ctx.fillStyle = "rgba(20, 60, 120, 0.06)";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
         }
     }
 
@@ -695,6 +919,7 @@
         drawMap(); 
         drawRipples(); 
         drawEntities();
+        drawAmbientEffects();
         drawLightingAndTorches();
         drawDialog();
         frame++;
